@@ -6,7 +6,7 @@ comments: true
 categories: summary
 ---
 
-本文主要是收集了一些利用[Octopress](http://octopress.org/)框架搭建博客的资料，方便各位看官学习。
+本文主要是收集了一些利用[Octopress](http://octopress.org/)框架搭建博客的资料。
 
 ##博客链接
 * 搭建一个免费的，无限流量的Blog----github Pages和Jekyll入门   
