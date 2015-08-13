@@ -8,17 +8,17 @@ categories: summary
 
 * 在百度云目录新建test.git文件夹
   
-  ![](../images/test_git_init.png)
+  ![](/images/test_git_init.png)
   
 * 在test.git目录shell下执行git --bare init命令
 
-  ![](../images/test_git_bare.png)
+  ![](/images/test_git_bare.png)
 
 * clone百度云下的test.git
 
-  ![](../images/test_git_clone.png)
+  ![](/images/test_git_clone.png)
 
 * 利用sourcetree上传代码
 
-  ![](../images/test_git_commit.png)
+  ![](/images/test_git_commit.png)
   
