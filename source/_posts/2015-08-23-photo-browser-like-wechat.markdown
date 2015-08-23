@@ -6,7 +6,7 @@ comments: true
 categories: iOS
 ---
 
-![](../images/photo_browser_view.png)
+![](images/photo_browser_view.png)
 
 ##步骤
 1、初始化imageview
