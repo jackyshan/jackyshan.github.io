@@ -6,7 +6,7 @@ comments: true
 categories: iOS
 ---
 
-![]()/images/block_alert_view.png)
+![](/images/block_alert_view.png)
 
 ##步骤
 
