@@ -6,7 +6,7 @@ comments: true
 categories: iOS
 ---
 
-![](/images/block_alert_view.png)
+![]()/images/block_alert_view.png)
 
 ##步骤
 
@@ -22,12 +22,12 @@ BlockAlertView *alertView = [[BlockAlertView alloc] initWithTitle:@"test"];
 [alertView addTitle:@"share" block:^(id result) {
         NSLog(@"share");
     }];
-    [alertView addTitle:@"zan" block:^(id result) {
-        NSLog(@"zan");
-    }];
-    [alertView addTitle:@"fun" block:^(id result) {
-        NSLog(@"fun");
-    }];
+[alertView addTitle:@"zan" block:^(id result) {
+    NSLog(@"zan");
+}];
+[alertView addTitle:@"fun" block:^(id result) {
+    NSLog(@"fun");
+}];
 ```
 
 3、showInView
