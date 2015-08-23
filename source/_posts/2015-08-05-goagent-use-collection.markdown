@@ -20,3 +20,6 @@ categories: summary
 * [国内的网站镜像](http://www.xiexingwen.com/)`推荐`
 * [Google全球IP地址库](https://github.com/Playkid/Google-IPs)
 * [Google 镜像站搜集](http://www.itechzero.com/google-mirror-sites-collect.html)
+
+###问题解决
+* 让GoAgent通过IPV6科学上网<http://daily.zhihu.com/story/7055714>`通过ipv6解决`
