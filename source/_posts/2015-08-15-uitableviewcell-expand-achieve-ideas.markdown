@@ -6,7 +6,7 @@ comments: true
 categories: iOS
 ---
 
-![](/images/contacts_expand.png)
+![](/images/contacts_expand.gif)
 
 ##Model
 ```

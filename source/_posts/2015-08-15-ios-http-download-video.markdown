@@ -6,7 +6,7 @@ comments: true
 categories: iOS
 ---
 
-![](/images/ios_http_download.png)
+![](/oimages/ios_http_download.gif)
 
 ##网络
 

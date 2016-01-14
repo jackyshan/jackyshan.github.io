@@ -10,6 +10,13 @@ categories: summary
 
 ##推荐
 
+* [蓝灯](https://getlantern.org/)`网络加速，类似shadowsocks`**重点推荐**
+
+>
+优点：免费
+>
+缺点：不能修改代理配置文件，没有iOS端
+
 * [红杏](http://honx.in/_VLu0DM6vDwo3sn9N)`网络加速器`
 	
 >
