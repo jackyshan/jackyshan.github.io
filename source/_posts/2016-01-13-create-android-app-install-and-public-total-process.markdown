@@ -157,6 +157,9 @@ categories: Android
 
 * 连接android手机调试，报错minSdkVersion大于当前android设备(API16)
 
+![](/images/incompatible_api_android.jpg)
+
+
 `解决方法`
 
 >打开build.gradle文件，更改minSdkVersion 16
