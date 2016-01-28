@@ -8,9 +8,11 @@ categories: Android
 
 ##环境
 
- >系统：OS X EI Capitan
+ >系统 ：OS X EI Capitan
  
  >java ：1.8.0_25
+ 
+ >开发工具 ：[Android Studio](http://developer.android.com/sdk/index.html)
 
 ##工具
 `Android Studio下载`
@@ -203,8 +205,82 @@ categories: Android
 
 
 
-##持续更新中...
+##打包
+
+* 签名
+
+>点击上面build，generate signed apk，next
+
+![](/images/build_signed_apk.png)
 	
+>点击createNew,设置key Store，ok
+
+![](/images/new_key_store.png)
+
+>点击next，输入密码，finish
+
+![](/images/finish_signed_apk.png)
+
+* 配置项目框架，如图，ok
+
+![](/images/config_project_structure.jpg)
+
+* build.gradle，生成signingConfigs，sync gradle
+
+![](/images/build_gradle_siningconfigs.jpg)
+
+* 打开右侧Gradle，双击assembleRelease
+
+![](/images/assemble_release.jpg)
+
+* 打包完成
+
+![](/images/assemble_release_ok.jpg)
+
+
+##多渠道打包
+
+* 配置build.gradle
+
+        buildTypes {
+                release {
+                    //指定签名为release
+                    signingConfig signingConfigs.release
+                    minifyEnabled false
+                    proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                }
+            }
+            productFlavors {
+
+                xiaomi {}
+                wandoujia {}
+                baidu {}
+                c360 {}
+                uc {}
+
+                productFlavors.all { flavor ->
+                    flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+                }
+
+            }
+
+![](/images/productFlavors_sign_release.jpg)
+
+
+* 友盟配置渠道，打开AndroidManifest.xml
+
+        <meta-data
+                    android:name="UMENG_CHANNEL"
+                    android:value="${UMENG_CHANNEL_VALUE}" />
+                    
+* 打开右侧Gradle，双击assembleRelease，打包完成(app/build/outputs/apk/)文件夹下
+
+![](/images/app_release_apk.png)
+
+
+
+
+
 	
 
 
