@@ -1,0 +1,968 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="环境 系统 ：OS X EI Capitan java ：1.8.0_25 开发工具 ：Android Studio  工具Android Studio下载 http://developer.android.com/sdk/index.html 安装Android Studio 是否有工程已有配置文件，选择无，下一步    Unable to access Android SDK add-on l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发从新建到发布整个流程">
+<meta property="og:url" content="http://jackyshan.github.io/2016/01/13/2016-01-13-create-android-app-install-and-public-total-process/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="环境 系统 ：OS X EI Capitan java ：1.8.0_25 开发工具 ：Android Studio  工具Android Studio下载 http://developer.android.com/sdk/index.html 安装Android Studio 是否有工程已有配置文件，选择无，下一步    Unable to access Android SDK add-on l">
+<meta property="og:image" content="http://jackyshan.github.io/images/accept.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/add-on%20list.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Welcome.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Install%20Type.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Verify%20Settings.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Downloading%20android-sdk-r22.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/new%20Android%20Studio%20project.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/android-sdk_r24.3.4.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Android%20SDK%20location.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/New%20Project.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/API%2021.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Loading%20SDK%20information.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/android%205.0.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Build-Tools%2021.1.2.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Android%20SDK%20Extras%2021.0.3.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Add%20an%20activity%20to%20Mobile.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Customize%20the%20Activity.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/gradle%20project%20download.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/main%20project%20home.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/Unable%20to%20obtain%20debug%20bridge.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/platform-tools-r22.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/choise%20devices.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/incompatible_api_android.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/androidsdklist.gif">
+<meta property="og:image" content="http://jackyshan.github.io/images/build_signed_apk.png">
+<meta property="og:image" content="http://jackyshan.github.io/images/new_key_store.png">
+<meta property="og:image" content="http://jackyshan.github.io/images/finish_signed_apk.png">
+<meta property="og:image" content="http://jackyshan.github.io/images/config_project_structure.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/build_gradle_siningconfigs.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/assemble_release.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/assemble_release_ok.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/productFlavors_sign_release.jpg">
+<meta property="og:image" content="http://jackyshan.github.io/images/app_release_apk.png">
+<meta property="og:updated_time" content="2017-06-04T11:07:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android开发从新建到发布整个流程">
+<meta name="twitter:description" content="环境 系统 ：OS X EI Capitan java ：1.8.0_25 开发工具 ：Android Studio  工具Android Studio下载 http://developer.android.com/sdk/index.html 安装Android Studio 是否有工程已有配置文件，选择无，下一步    Unable to access Android SDK add-on l">
+<meta name="twitter:image" content="http://jackyshan.github.io/images/accept.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2016/01/13/2016-01-13-create-android-app-install-and-public-total-process/"/>
+
+
+
+
+
+  <title>Android开发从新建到发布整个流程 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">宁静致远</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2016/01/13/2016-01-13-create-android-app-install-and-public-total-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android开发从新建到发布整个流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-13T19:01:52+08:00">
+                2016-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><blockquote>
+<p>系统 ：OS X EI Capitan</p>
+<p>java ：1.8.0_25</p>
+<p>开发工具 ：<a href="http://developer.android.com/sdk/index.html" target="_blank" rel="external">Android Studio</a></p>
+</blockquote>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p><code>Android Studio下载</code></p>
+<pre><code>http://developer.android.com/sdk/index.html
+</code></pre><h2 id="安装Android-Studio"><a href="#安装Android-Studio" class="headerlink" title="安装Android Studio"></a>安装Android Studio</h2><ul>
+<li>是否有工程已有配置文件，选择无，下一步</li>
+</ul>
+<p><img src="/images/accept.jpg" alt=""></p>
+<ul>
+<li>Unable to access Android SDK add-on list</li>
+</ul>
+<p><img src="/images/add-on list.jpg" alt=""></p>
+<p><code>解决方法</code></p>
+<pre><code>sudo vi /Applications/Android\ Studio.app/Contents/bin/idea.properties
+</code></pre><p>.</p>
+<pre><code>#
+# *DO NOT* modify this file directly. If there is a value that you would like to override,
+# please add it to your user specific configuration file.
+#
+# See http://tools.android.com/tech-docs/configuration
+#
+apple.laf.useScreenMenuBar=true
+apple.awt.fullscreencapturealldisplays=false
+apple.awt.graphics.UseQuartz=true
+CVS_PASSFILE=~/.cvspass
+idea.xdebug.key=-Xdebug
+java.endorsed.dirs=
+idea.smooth.progress=false
+idea.fatal.error.notification=disabled
+com.apple.mrj.application.live-resize=false
+JVMVersion=1.6*
+disable.android.first.run=true
+</code></pre><p>点击取消，进行下一步</p>
+<ul>
+<li>Welcome Android Studio Setup Wizard，下一步</li>
+</ul>
+<p><img src="/images/Welcome.jpg" alt=""></p>
+<ul>
+<li>Install Type，下一步</li>
+</ul>
+<p><img src="/images/Install Type.jpg" alt=""></p>
+<ul>
+<li>Verify Settings，完成</li>
+</ul>
+<p><img src="/images/Verify Settings.jpg" alt=""></p>
+<ul>
+<li>Downloading android-sdk-r22-macosx.zip, connect timed out，点击取消，等下解决</li>
+</ul>
+<p><img src="/images/Downloading android-sdk-r22.jpg" alt=""></p>
+<h2 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h2><ul>
+<li>点击Start a new Android Studio project，报错</li>
+</ul>
+<p><img src="/images/new Android Studio project.jpg" alt=""></p>
+<p><code>解决方法</code></p>
+<p>打开网页<a href="http://www.androiddevtools.cn/" target="_blank" rel="external">http://www.androiddevtools.cn/</a> 下载android-sdk_r24.3.4-macosx.zip (SDK Tools)</p>
+<p><img src="/images/android-sdk_r24.3.4.jpg" alt=""></p>
+<p>.</p>
+<pre><code>点击Configure--&gt;Project Defaults--&gt;Project Structure--&gt;Android SDK location
+</code></pre><p><img src="/images/Android SDK location.jpg" alt=""></p>
+<ul>
+<li>点击Start a new Android Studio project，New Project，下一步</li>
+</ul>
+<p><img src="/images/New Project.jpg" alt=""></p>
+<ul>
+<li>Target Android Devices，<code>选择API 21</code>，下一步</li>
+</ul>
+<p><img src="/images/API 21.jpg" alt=""></p>
+<ul>
+<li>Installing Android SDK, Loading SDK information… There is nothing to install or update. </li>
+</ul>
+<p><img src="/images/Loading SDK information.jpg" alt=""></p>
+<p><code>解决方法</code></p>
+<p>打开网页<a href="http://www.androiddevtools.cn/" target="_blank" rel="external">http://www.androiddevtools.cn/</a> 下载 <code>android 5.0</code>     (SDK)</p>
+<p><img src="/images/android 5.0.jpg" alt=""></p>
+<pre><code>解压放到/Users/jackyshan/android-sdk-macosx/platforms目录下
+</code></pre><p>打开网页<a href="http://www.androiddevtools.cn/" target="_blank" rel="external">http://www.androiddevtools.cn/</a> 下载<code>Build-Tools 21.1.2</code>     (Build-Tools)</p>
+<p><img src="/images/Build-Tools 21.1.2.jpg" alt=""></p>
+<pre><code>解压放到/Users/jackyshan/android-sdk-macosx/build-tools目录下
+</code></pre><p>打开网页<a href="http://www.androiddevtools.cn/" target="_blank" rel="external">http://www.androiddevtools.cn/</a> 下载<code>Android SDK Extras 21.0.3</code> (Android SDK Extras)</p>
+<p><img src="/images/Android SDK Extras 21.0.3.jpg" alt=""></p>
+<pre><code>解压放到/Users/jackyshan/android-sdk-macosx/extras目录下
+</code></pre><p>重新点击Start a new Android Studio project，下一步，下一步</p>
+<ul>
+<li>Add an activity to Mobile，下一步</li>
+</ul>
+<p><img src="/images/Add an activity to Mobile.jpg" alt=""></p>
+<ul>
+<li>Customize the Activity，完成</li>
+</ul>
+<p><img src="/images/Customize the Activity.jpg" alt=""></p>
+<ul>
+<li>gradle project download，等待gradle下载完<code>不要点击取消,有点慢</code></li>
+</ul>
+<p><img src="/images/gradle project download.jpg" alt=""></p>
+<ul>
+<li>下载完，进入工程</li>
+</ul>
+<p><img src="/images/main project home.jpg" alt=""></p>
+<ul>
+<li>运行报错，Error running app: Unable to obtain debug bridge</li>
+</ul>
+<p><img src="/images/Unable to obtain debug bridge.jpg" alt=""></p>
+<p><code>解决方法</code></p>
+<p>打开网页<a href="http://www.androiddevtools.cn/" target="_blank" rel="external">http://www.androiddevtools.cn/</a> 下载 <code>platform-tools-r22</code>     (SDK Platform-Tools)</p>
+<p><img src="/images/platform-tools-r22.jpg" alt=""></p>
+<pre><code>解压放到/Users/jackyshan/android-sdk-macosx目录下
+</code></pre><ul>
+<li>运行没有问题，弹出设备选择</li>
+</ul>
+<p><img src="/images/choise devices.jpg" alt=""></p>
+<ul>
+<li>连接android手机调试，报错minSdkVersion大于当前android设备(API16)</li>
+</ul>
+<p><img src="/images/incompatible_api_android.jpg" alt=""></p>
+<p><code>解决方法</code></p>
+<blockquote>
+<p>打开build.gradle文件，更改minSdkVersion 16</p>
+</blockquote>
+<pre><code>apply plugin: &apos;com.android.application&apos;
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion &quot;22.0.0&quot;
+
+    defaultConfig {
+        applicationId &quot;io.gitcafe.jackyshan.myapplication&quot;
+        minSdkVersion 16
+        targetSdkVersion 21
+        versionCode 1
+        versionName &quot;1.0&quot;
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])
+    testCompile &apos;junit:junit:4.12&apos;
+    compile &apos;com.android.support:appcompat-v7:21.0.3&apos;
+}
+</code></pre><ul>
+<li>sdk目录截图</li>
+</ul>
+<p><img src="/images/androidsdklist.gif" alt=""></p>
+<ul>
+<li>我的sdk目录打包下载<code>如果自己怎么都弄不好，可以去百度云下载弄好的sdk</code></li>
+</ul>
+<blockquote>
+<p>链接: <a href="http://pan.baidu.com/s/1pKustcv密码zhcy" target="_blank" rel="external">http://pan.baidu.com/s/1pKustcv 密码: zhcy</a> 密码: zhcy</p>
+</blockquote>
+<h2 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h2><ul>
+<li>签名</li>
+</ul>
+<blockquote>
+<p>点击上面build，generate signed apk，next</p>
+</blockquote>
+<p><img src="/images/build_signed_apk.png" alt=""></p>
+<blockquote>
+<p>点击createNew,设置key Store，ok</p>
+</blockquote>
+<p><img src="/images/new_key_store.png" alt=""></p>
+<blockquote>
+<p>点击next，输入密码，finish</p>
+</blockquote>
+<p><img src="/images/finish_signed_apk.png" alt=""></p>
+<ul>
+<li>配置项目框架，如图，ok</li>
+</ul>
+<p><img src="/images/config_project_structure.jpg" alt=""></p>
+<ul>
+<li>build.gradle，生成signingConfigs，sync gradle</li>
+</ul>
+<p><img src="/images/build_gradle_siningconfigs.jpg" alt=""></p>
+<ul>
+<li>打开右侧Gradle，双击assembleRelease</li>
+</ul>
+<p><img src="/images/assemble_release.jpg" alt=""></p>
+<ul>
+<li>打包完成</li>
+</ul>
+<p><img src="/images/assemble_release_ok.jpg" alt=""></p>
+<h2 id="多渠道打包"><a href="#多渠道打包" class="headerlink" title="多渠道打包"></a>多渠道打包</h2><ul>
+<li><p>配置build.gradle</p>
+<pre><code>buildTypes {
+        release {
+            //指定签名为release
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;
+        }
+    }
+    productFlavors {
+
+        xiaomi {}
+        wandoujia {}
+        baidu {}
+        c360 {}
+        uc {}
+
+        productFlavors.all { flavor -&gt;
+            flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+        }
+
+    }
+</code></pre></li>
+</ul>
+<p><img src="/images/productFlavors_sign_release.jpg" alt=""></p>
+<ul>
+<li><p>友盟配置渠道，打开AndroidManifest.xml</p>
+<pre><code>&lt;meta-data
+            android:name=&quot;UMENG_CHANNEL&quot;
+            android:value=&quot;${UMENG_CHANNEL_VALUE}&quot; /&gt;
+</code></pre></li>
+<li><p>打开右侧Gradle，双击assembleRelease，打包完成(app/build/outputs/apk/)文件夹下</p>
+</li>
+</ul>
+<p><img src="/images/app_release_apk.png" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/12/2016-01-12-deploy-flask-app-on-ubuntu-use-nginx/" rel="next" title="在 Ubuntu 上使用 Nginx 部署 Flask 应用">
+                <i class="fa fa-chevron-left"></i> 在 Ubuntu 上使用 Nginx 部署 Flask 应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境"><span class="nav-number">1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具"><span class="nav-number">2.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Android-Studio"><span class="nav-number">3.</span> <span class="nav-text">安装Android Studio</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新建项目"><span class="nav-number">4.</span> <span class="nav-text">新建项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包"><span class="nav-number">5.</span> <span class="nav-text">打包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多渠道打包"><span class="nav-number">6.</span> <span class="nav-text">多渠道打包</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

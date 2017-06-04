@@ -1,0 +1,889 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="参考 安装sudo apt-get update &amp;amp;&amp;amp; sudo apt-get upgrade sudo apt-get install python-setuptools sudo easy_install pip sudo pip install virtualenv sudo apt-get install build-essential python python-dev">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Ubuntu 上使用 Nginx 部署 Flask 应用">
+<meta property="og:url" content="http://jackyshan.github.io/2016/01/12/2016-01-12-deploy-flask-app-on-ubuntu-use-nginx/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="参考 安装sudo apt-get update &amp;amp;&amp;amp; sudo apt-get upgrade sudo apt-get install python-setuptools sudo easy_install pip sudo pip install virtualenv sudo apt-get install build-essential python python-dev">
+<meta property="og:updated_time" content="2017-06-04T10:59:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在 Ubuntu 上使用 Nginx 部署 Flask 应用">
+<meta name="twitter:description" content="参考 安装sudo apt-get update &amp;amp;&amp;amp; sudo apt-get upgrade sudo apt-get install python-setuptools sudo easy_install pip sudo pip install virtualenv sudo apt-get install build-essential python python-dev">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2016/01/12/2016-01-12-deploy-flask-app-on-ubuntu-use-nginx/"/>
+
+
+
+
+
+  <title>在 Ubuntu 上使用 Nginx 部署 Flask 应用 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">宁静致远</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2016/01/12/2016-01-12-deploy-flask-app-on-ubuntu-use-nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">在 Ubuntu 上使用 Nginx 部署 Flask 应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-12T14:21:29+08:00">
+                2016-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/summary/" itemprop="url" rel="index">
+                    <span itemprop="name">summary</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://www.oschina.net/translate/serving-flask-with-nginx-on-ubuntu" target="_blank" rel="external"><strong>参考</strong></a></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre><code>sudo apt-get update &amp;&amp; sudo apt-get upgrade
+sudo apt-get install python-setuptools
+sudo easy_install pip
+sudo pip install virtualenv
+sudo apt-get install build-essential python python-dev
+sudo add-apt-repository ppa:nginx/stable
+
+sudo apt-get install nginx
+sudo /etc/init.d/nginx start
+
+sudo pip install uwsgi
+</code></pre><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><pre><code>sudo mkdir /var/www
+sudo mkdir /var/www/demoapp
+cd /var/www/demoapp
+virtualenv venv
+. venv/bin/activate
+pip install flask
+</code></pre><h3 id="文件index-py"><a href="#文件index-py" class="headerlink" title="文件index.py"></a>文件index.py</h3><pre><code>from flask import Flask
+app = Flask(__name__)
+
+@app.route(&quot;/&quot;)
+def hello():
+    return &quot;Hello World!&quot;
+
+//这两行要注释掉，不然搭配nginx运行，python会和nginx打架争抢入口，造成Internal Server Error
+//if __name__ == &quot;__main__&quot;:
+//    app.run(host=&apos;0.0.0.0&apos;, port=8080)
+</code></pre><h3 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h3><pre><code>sudo rm /etc/nginx/sites-enabled/default
+
+vi /var/www/demoapp/demoapp_nginx.conf
+
+server {
+    listen      5000;
+    server_name localhost;
+    charset     utf-8;
+    client_max_body_size 75M;
+
+    # 开启gzip
+    gzip on;
+    # 启用gzip压缩的最小文件，小于设置值的文件将不会压缩
+    gzip_min_length 1k;
+    # gzip 压缩级别，1-10，数字越大压缩的越好，也越占用CPU时间，后面会有详细说明
+    gzip_comp_level 2;
+    # 进行压缩的文件类型。javascript有多种形式。其中的值可以在 mime.types 文件中找到。
+    gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+    # 是否在http header中添加Vary: Accept-Encoding，建议开启
+    gzip_vary on;
+
+    location / { try_files $uri @demoapp; }
+    location @demoapp {
+            include uwsgi_params;
+            uwsgi_pass unix:/var/www/demoapp/demoapp_uwsgi.sock;
+    }
+}
+
+sudo ln -s /var/www/demoapp/demoapp_nginx.conf /etc/nginx/conf.d/
+</code></pre><h3 id="配置uWSGI"><a href="#配置uWSGI" class="headerlink" title="配置uWSGI"></a>配置uWSGI</h3><pre><code>sudo mkdir -p /var/log/uwsgi
+
+vi /var/www/demoapp/demoapp_uwsgi.ini
+
+[uwsgi]
+#application&apos;s base folder
+base = /var/www/demoapp
+
+#python module to import
+app = index
+module = %(app)
+
+home = %(base)/venv
+pythonpath = %(base)
+
+#socket file&apos;s location
+socket = /var/www/demoapp/%n.sock
+
+#permissions for the socket file
+chmod-socket    = 777
+
+#the variable that holds a flask application inside the module imported at line #6
+callable = app
+
+#location of log files
+logto = /var/log/uwsgi/%n.log
+</code></pre><h3 id="uWSGI-Emperor"><a href="#uWSGI-Emperor" class="headerlink" title="uWSGI Emperor"></a>uWSGI Emperor</h3><pre><code>vi /etc/init/uwsgi.conf
+
+description &quot;uWSGI&quot;
+start on runlevel [2346]
+stop on runlevel [!2346]
+respawn
+
+env UWSGI=/usr/local/bin/uwsgi
+env LOGTO=/var/log/uwsgi/emperor.log
+
+exec $UWSGI --master --emperor /etc/uwsgi/vassals --die-on-term --uid www-data --gid www-data --logto $LOGTO
+</code></pre><p>.  </p>
+<pre><code>sudo mkdir /etc/uwsgi &amp;&amp; sudo mkdir /etc/uwsgi/vassals
+sudo ln -s /var/www/demoapp/demoapp_uwsgi.ini /etc/uwsgi/vassals
+</code></pre><h3 id="目录权限"><a href="#目录权限" class="headerlink" title="目录权限"></a>目录权限</h3><pre><code>sudo chown -R www-data:www-data /var/www/demoapp/
+sudo chown -R www-data:www-data /var/log/uwsgi/
+</code></pre><h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><pre><code>start uwsgi
+/etc/init.d/nginx restart
+</code></pre><h3 id="托管多个应用"><a href="#托管多个应用" class="headerlink" title="托管多个应用"></a>托管多个应用</h3><h4 id="demoapp1"><a href="#demoapp1" class="headerlink" title="demoapp1"></a>demoapp1</h4><p>目录</p>
+<pre><code>mkdir /var/www/demoapp1
+</code></pre><p>index.py</p>
+<pre><code>vi index.py 
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route(&quot;/&quot;)
+def hello():
+    return &quot;Hello World!&quot;
+</code></pre><p>demoapp1_nginx.conf </p>
+<pre><code>vi demoapp1_nginx.conf
+
+server {
+    listen      5001;//第二个应用端口
+    server_name localhost;
+    charset     utf-8;
+    client_max_body_size 75M;
+
+    # 开启gzip
+    gzip on;
+    # 启用gzip压缩的最小文件，小于设置值的文件将不会压缩
+    gzip_min_length 1k;
+    # gzip 压缩级别，1-10，数字越大压缩的越好，也越占用CPU时间，后面会有详细说明
+    gzip_comp_level 2;
+    # 进行压缩的文件类型。javascript有多种形式。其中的值可以在 mime.types 文件中找到。
+    gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+    # 是否在http header中添加Vary: Accept-Encoding，建议开启
+    gzip_vary on;
+
+    location / { try_files $uri @demoapp1; }
+    location @demoapp1 {
+            include uwsgi_params;
+            uwsgi_pass unix:/var/www/demoapp1/demoapp1_uwsgi.sock;
+    }
+}
+</code></pre><p>demoapp1_uwsgi.ini</p>
+<pre><code>vi demoapp1_uwsgi.ini
+
+[uwsgi]
+#application&apos;s base folder
+base = /var/www/demoapp1
+
+#python module to import
+app = index
+module = %(app)
+
+home = %(base)/venv
+pythonpath = %(base)
+
+#socket file&apos;s location
+socket = /var/www/demoapp1/%n.sock
+
+#permissions for the socket file
+chmod-socket    = 777
+
+#the variable that holds a flask application inside the module imported at line #6
+callable = app
+
+#location of log files
+logto = /var/log/uwsgi/%n.log
+</code></pre><p>外链</p>
+<pre><code>ln -s /var/www/demoapp1/demoapp1_nginx.conf     /etc/nginx/conf.d/
+ln -s /var/www/demoapp1/demoapp1_uwsgi.ini /etc/uwsgi/vassals/
+</code></pre><p>virtualenv</p>
+<pre><code>virtualenv venv
+. venv/bin/activate
+pip install flask
+</code></pre><p>目录权限</p>
+<pre><code>chown -R www-data:www-data /var/www/demoapp1/    
+</code></pre><p>启动</p>
+<pre><code>restart uwsgi
+/etc/init.d/nginx restart
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/12/2016-01-12-setup-ipsec-psk-on-ubuntu/" rel="next" title="ubuntu上ipsec搭建全程psk记录">
+                <i class="fa fa-chevron-left"></i> ubuntu上ipsec搭建全程psk记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/13/2016-01-13-create-android-app-install-and-public-total-process/" rel="prev" title="Android开发从新建到发布整个流程">
+                Android开发从新建到发布整个流程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录"><span class="nav-number">2.</span> <span class="nav-text">目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件index-py"><span class="nav-number">3.</span> <span class="nav-text">文件index.py</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置nginx"><span class="nav-number">4.</span> <span class="nav-text">配置nginx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置uWSGI"><span class="nav-number">5.</span> <span class="nav-text">配置uWSGI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uWSGI-Emperor"><span class="nav-number">6.</span> <span class="nav-text">uWSGI Emperor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#目录权限"><span class="nav-number">7.</span> <span class="nav-text">目录权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动"><span class="nav-number">8.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#托管多个应用"><span class="nav-number">9.</span> <span class="nav-text">托管多个应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#demoapp1"><span class="nav-number">9.1.</span> <span class="nav-text">demoapp1</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
