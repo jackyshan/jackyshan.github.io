@@ -144,6 +144,7 @@ font:
   #LinkLabel: Link
 social:
   GitHub: https://github.com/jackyshan
+  简书: http://www.jianshu.com/u/a2133b6aa395
 
 # Social Links Icons
 # Icon Mapping:
@@ -235,7 +236,7 @@ excerpt_description: true
 # Please use <!-- more --> in the post to control excerpt accurately.
 auto_excerpt:
   enable: true
-  length: 150
+  length: 350
 
 # Post meta display settings
 post_meta:
@@ -312,7 +313,7 @@ han: false
 
 # Disqus
 disqus:
-  enable: true
+  enable: false
   shortname: jackyshan
   count: true
 
