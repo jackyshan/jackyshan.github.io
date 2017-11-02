@@ -93,20 +93,24 @@
 
 
 
-<meta name="description" content="场景UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图  这是其中一个模块的切图列表，为了区分，我们切图可以这么做 使用rename在每个文件名前面加上业务名(searchall_) rename &amp;apos;s/(\w+)/searchall_$1/&amp;apos; * 之后效果  后续更新以后有更多的使用场景的rename命令再进行更新">
+<meta name="description" content="场景1切图名字加上业务名UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图  这是其中一个模块的切图列表，为了区分，我们切图可以这么做 使用rename在每个文件名前面加上业务名(searchall_) rename &amp;apos;s/(\w+)/searchall_$1/&amp;apos; * 之后效果  场景2加上@2x和@3xui对每个图片命名2x3x比较麻烦，可以">
 <meta name="keywords" content="shell">
 <meta property="og:type" content="article">
 <meta property="og:title" content="命令行批量重命名文件名">
 <meta property="og:url" content="http://jackyshan.github.io/2017/07/19/命令行批量重命名文件名/index.html">
 <meta property="og:site_name" content="jacky&#39;s blog">
-<meta property="og:description" content="场景UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图  这是其中一个模块的切图列表，为了区分，我们切图可以这么做 使用rename在每个文件名前面加上业务名(searchall_) rename &amp;apos;s/(\w+)/searchall_$1/&amp;apos; * 之后效果  后续更新以后有更多的使用场景的rename命令再进行更新">
+<meta property="og:description" content="场景1切图名字加上业务名UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图  这是其中一个模块的切图列表，为了区分，我们切图可以这么做 使用rename在每个文件名前面加上业务名(searchall_) rename &amp;apos;s/(\w+)/searchall_$1/&amp;apos; * 之后效果  场景2加上@2x和@3xui对每个图片命名2x3x比较麻烦，可以">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-e4756795f4abec44.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-30ceda5a74960ba1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-32a427eebd74fdc2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2017-07-19T11:59:29.000Z">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-9f4ae72a56ca0d28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-715a9ed544386665.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-0c568b1072113132.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-6c9d4d79f67d332f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-11-02T13:43:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="命令行批量重命名文件名">
-<meta name="twitter:description" content="场景UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图  这是其中一个模块的切图列表，为了区分，我们切图可以这么做 使用rename在每个文件名前面加上业务名(searchall_) rename &amp;apos;s/(\w+)/searchall_$1/&amp;apos; * 之后效果  后续更新以后有更多的使用场景的rename命令再进行更新">
+<meta name="twitter:description" content="场景1切图名字加上业务名UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图  这是其中一个模块的切图列表，为了区分，我们切图可以这么做 使用rename在每个文件名前面加上业务名(searchall_) rename &amp;apos;s/(\w+)/searchall_$1/&amp;apos; * 之后效果  场景2加上@2x和@3xui对每个图片命名2x3x比较麻烦，可以">
 <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/301129-e4756795f4abec44.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
@@ -326,14 +330,25 @@
 
       
         <p><img src="http://upload-images.jianshu.io/upload_images/301129-e4756795f4abec44.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
-<h1 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h1><p>UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图</p>
+<h3 id="场景1切图名字加上业务名"><a href="#场景1切图名字加上业务名" class="headerlink" title="场景1切图名字加上业务名"></a>场景1切图名字加上业务名</h3><p>UI切的图命名很简洁，没有加上业务名不好区分，容易造成重名，并且不易区分，例如下图</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/301129-30ceda5a74960ba1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
 <p>这是其中一个模块的切图列表，为了区分，我们切图可以这么做</p>
-<h1 id="使用rename"><a href="#使用rename" class="headerlink" title="使用rename"></a>使用rename</h1><p>在每个文件名前面加上业务名(searchall_)</p>
+<p><code>使用rename</code><br>在每个文件名前面加上业务名(<code>searchall_</code>)</p>
 <pre><code>rename &apos;s/(\w+)/searchall_$1/&apos; *
 </code></pre><p>之后效果</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/301129-32a427eebd74fdc2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
-<h1 id="后续更新"><a href="#后续更新" class="headerlink" title="后续更新"></a>后续更新</h1><p>以后有更多的使用场景的rename命令再进行更新</p>
+<h3 id="场景2加上-2x和-3x"><a href="#场景2加上-2x和-3x" class="headerlink" title="场景2加上@2x和@3x"></a>场景2加上@2x和@3x</h3><p>ui对每个图片命名2x3x比较麻烦，可以使用<code>rename</code>进行解决，<code>所有的图片ui命名</code>可以<code>@2x</code>可以后缀跟个2，<code>@3x</code>可以后缀跟个3</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-9f4ae72a56ca0d28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>在每个图片名字后面加个(<code>x</code>)</p>
+<pre><code>rename &apos;s/(\w+)/$1x/&apos; *
+</code></pre><p><img src="http://upload-images.jianshu.io/upload_images/301129-715a9ed544386665.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>然后在2x、3x前面加上(<code>@</code>)</p>
+<pre><code>rename &apos;s/(\dx)/\@$1/&apos; *
+</code></pre><p><img src="http://upload-images.jianshu.io/upload_images/301129-0c568b1072113132.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>最后给每个图片加上业务范围(<code>jianpaimokuai_</code>)</p>
+<pre><code>rename &apos;s/(\w+)/jianpaimokuai_$1/&apos; *
+</code></pre><p><img src="http://upload-images.jianshu.io/upload_images/301129-6c9d4d79f67d332f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<h3 id="后续更新"><a href="#后续更新" class="headerlink" title="后续更新"></a>后续更新</h3><p>以后有更多的使用场景的rename命令再进行更新</p>
 
       
     </div>
@@ -385,6 +400,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/02/iOS播放多种视频格式，实现DLNA-AirPlay投射盒子总结/" rel="prev" title="iOS播放多种视频格式，实现DLNA|AirPlay投射盒子总结">
+                iOS播放多种视频格式，实现DLNA|AirPlay投射盒子总结 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -456,7 +475,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-count">29</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -478,7 +497,7 @@
             
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
@@ -533,7 +552,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#场景"><span class="nav-number">1.</span> <span class="nav-text">场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用rename"><span class="nav-number">2.</span> <span class="nav-text">使用rename</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后续更新"><span class="nav-number">3.</span> <span class="nav-text">后续更新</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#场景1切图名字加上业务名"><span class="nav-number">1.</span> <span class="nav-text">场景1切图名字加上业务名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#场景2加上-2x和-3x"><span class="nav-number">2.</span> <span class="nav-text">场景2加上@2x和@3x</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后续更新"><span class="nav-number">3.</span> <span class="nav-text">后续更新</span></a></li></ol></div>
             
 
           </div>
