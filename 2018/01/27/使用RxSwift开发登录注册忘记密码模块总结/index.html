@@ -1,0 +1,772 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="RxSwift," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="刚好有新的项目，就把登录这一块的逻辑全部用RxSwift去写了，用很少的代码量实现了所有的逻辑，这就是RxSwift的魅力吧，下面是项目登录注册模块的演示。  登录当前登录页面的逻辑分为密码登录和验证码登录，点击上面tab进行切换。上面的tab是我自定义的控件，切换的值通过block传回来。 忘记密码控件: 密码登录的时候需要显示，验证码登录需要隐藏。获取验证码控件：密码登录的时候需要隐藏，验证">
+<meta name="keywords" content="RxSwift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用RxSwift开发登录注册忘记密码模块总结">
+<meta property="og:url" content="http://jackyshan.github.io/2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="刚好有新的项目，就把登录这一块的逻辑全部用RxSwift去写了，用很少的代码量实现了所有的逻辑，这就是RxSwift的魅力吧，下面是项目登录注册模块的演示。  登录当前登录页面的逻辑分为密码登录和验证码登录，点击上面tab进行切换。上面的tab是我自定义的控件，切换的值通过block传回来。 忘记密码控件: 密码登录的时候需要显示，验证码登录需要隐藏。获取验证码控件：密码登录的时候需要隐藏，验证">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-c0b63bc3d92bd864.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-602672650d962bfa.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-01-27T12:19:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用RxSwift开发登录注册忘记密码模块总结">
+<meta name="twitter:description" content="刚好有新的项目，就把登录这一块的逻辑全部用RxSwift去写了，用很少的代码量实现了所有的逻辑，这就是RxSwift的魅力吧，下面是项目登录注册模块的演示。  登录当前登录页面的逻辑分为密码登录和验证码登录，点击上面tab进行切换。上面的tab是我自定义的控件，切换的值通过block传回来。 忘记密码控件: 密码登录的时候需要显示，验证码登录需要隐藏。获取验证码控件：密码登录的时候需要隐藏，验证">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/301129-c0b63bc3d92bd864.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/"/>
+
+
+
+
+
+  <title>使用RxSwift开发登录注册忘记密码模块总结 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">使用RxSwift开发登录注册忘记密码模块总结</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-27T20:19:06+08:00">
+                2018-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/301129-c0b63bc3d92bd864.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>刚好有新的项目，就把登录这一块的逻辑全部用RxSwift去写了，用很少的代码量实现了所有的逻辑，这就是RxSwift的魅力吧，下面是项目登录注册模块的演示。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-602672650d962bfa.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gif"></p>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>当前登录页面的逻辑分为密码登录和验证码登录，点击上面tab进行切换。上面的tab是我自定义的控件，切换的值通过block传回来。</p>
+<p>忘记密码控件: 密码登录的时候需要显示，验证码登录需要隐藏。<br>获取验证码控件：密码登录的时候需要隐藏，验证码登录需要显示。<br>输入密码图标在验证码登录切换的时候变成验证码的图标。</p>
+<p>基于以上的逻辑，我增加一个全局的响应<code>bool</code>变量<code>isPasswdLoginSeg</code>，让这个变量的的值跟着切换的值变换，然后把响应变量的<code>bool</code>值绑定到相应的控件上，实现相关控件的隐藏和显示。</p>
+<hr>
+<p>默认是密码登录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">let isPasswdLoginSeg: Variable&lt;Bool&gt; = Variable(true)</div></pre></td></tr></table></figure></p>
+<p>这个是自定义的控件，切换的值是0代表是密码登录，1代表验证码登录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">jySegmentDayNightView.clickDayNightBlock = &#123; [weak self] idx in</div><div class="line">    self?.verifyPasswdFd.text = &quot;&quot;</div><div class="line">    self?.verifyPasswdFd.sendActions(for: .valueChanged)</div><div class="line">    self?.isPasswdLoginSeg.value = idx == 0</div><div class="line">    self?.verifyPasswdFd.resignFirstResponder()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>isPasswdLoginSeg</code>作为Observable发送值的变化，然后传送bool值，绑定到其他控件的rx属性，或者相关控件根据发送的bool值进行改变<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">isPasswdLoginSeg.asObservable().bind(to: verifyBtn.rx.isHidden).addDisposableTo(disposeBag)</div><div class="line">isPasswdLoginSeg.asObservable().map(&#123;!$0&#125;).bind(to: forgetPasswdBtn.rx.isHidden).addDisposableTo(disposeBag)</div><div class="line"></div><div class="line">isPasswdLoginSeg.asObservable().subscribe(onNext: &#123; [weak self] (isPasswd) in</div><div class="line">    self?.verifyPasswdImgV.image = isPasswd ? #imageLiteral(resourceName: &quot;passwd_login&quot;) : #imageLiteral(resourceName: &quot;verifycode_login&quot;)</div><div class="line">    self?.verifyPasswdFd.placeholder = isPasswd ? &quot;请输入密码&quot; : &quot;请输入验证码&quot;</div><div class="line">    self?.verifyPasswdFd.keyboardType = isPasswd ? .default : .numberPad</div><div class="line">    self?.verifyPasswdFd.isSecureTextEntry = isPasswd</div><div class="line">&#125;).addDisposableTo(disposeBag)</div></pre></td></tr></table></figure></p>
+<hr>
+<p>登录btn控件的enable属性需要跟着电话号码和密码或验证码的输入进行变化。enable属性的颜色提前设置好。验证码控件也是根据电话号码输入框的值是否符合要求改变它的enable值。</p>
+<p><code>Observable.combineLatest</code>结合<code>phoneFd</code>和<code>verifyPasswdFd</code>控件的rx值绑定到loginBtn的enable属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Observable.combineLatest(phoneFd.rx.text.orEmpty.asObservable(), verifyPasswdFd.rx.text.orEmpty.asObservable())&#123; $0.count == 11 &amp;&amp; $1.count &gt; 0 &#125;.bind(to: loginBtn.rx.isEnabled).addDisposableTo(disposeBag)</div></pre></td></tr></table></figure></p>
+<p><code>phoneFd</code>变化绑定到验证码控件的enable，通过map进行输入的判断转换bool值，下面是判断输入是否满足11位，这个比较简单，也可以加个正则判断输入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">phoneFd.rx.text.orEmpty.asObservable().distinctUntilChanged().map(&#123; $0.count == 11 &#125;).bind(to: verifyBtn.rx.isEnabled).addDisposableTo(disposeBag)</div></pre></td></tr></table></figure></p>
+<p><strong>下面有注册和忘记密码的rx写法，就不解释了。主要是对逻辑的封装，用rx的Observable进行值的绑定和转换，然后完成相应的业务。</strong></p>
+<h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">let disposeBag = DisposeBag()</div><div class="line">func initLinstener() &#123;</div><div class="line">    Observable.combineLatest(phoneFd.rx.text.orEmpty.asObservable(), verifyFd.rx.text.orEmpty.asObservable(), passwdFd.rx.text.orEmpty.asObservable())&#123; $0.count == 11 &amp;&amp; $1.count &gt; 0 &amp;&amp; ($2.count &gt;= 6 &amp;&amp; $2.count &lt;= 14) &#125;.bind(to: registerBtn.rx.isEnabled).addDisposableTo(disposeBag)</div><div class="line">    </div><div class="line">    phoneFd.rx.text.orEmpty.asObservable().distinctUntilChanged().map(&#123; $0.count == 11 &#125;).bind(to: verifyBtn.rx.isEnabled).addDisposableTo(disposeBag)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="忘记密码"><a href="#忘记密码" class="headerlink" title="忘记密码"></a>忘记密码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">let disposeBag = DisposeBag()</div><div class="line">func initLinstener() &#123;</div><div class="line">    let phoneValid = phoneFd.rx.text.orEmpty.distinctUntilChanged().asObservable().map(&#123;$0.count == 11&#125;)</div><div class="line">    let veryCodeValid = verifyFd.rx.text.orEmpty.distinctUntilChanged().asObservable().map(&#123;$0.count &gt; 0&#125;)</div><div class="line">    let passwdValid = passwdFd.rx.text.orEmpty.distinctUntilChanged().asObservable().map(&#123;$0.count &gt;= 6 &amp;&amp; $0.count &lt;= 14&#125;)</div><div class="line">    let confirmPasswdValid = passwdAgainFd.rx.text.orEmpty.distinctUntilChanged().asObservable().map(&#123;$0.count &gt;= 6 &amp;&amp; $0.count &lt;= 14&#125;)</div><div class="line">    let passwdEqualValid = Observable.combineLatest(passwdFd.rx.text.orEmpty.distinctUntilChanged().asObservable(), passwdAgainFd.rx.text.orEmpty.distinctUntilChanged()).map(&#123;$0 == $1&#125;)</div><div class="line">    </div><div class="line">    phoneValid.bind(to: verifyBtn.rx.isEnabled).addDisposableTo(disposeBag)</div><div class="line">    </div><div class="line">    Observable.combineLatest(phoneValid, veryCodeValid, passwdValid, confirmPasswdValid, passwdEqualValid).map(&#123;$0 &amp;&amp; $1 &amp;&amp; $2 &amp;&amp; $3 &amp;&amp; $4&#125;).bind(to: forgetBtn.rx.isEnabled).addDisposableTo(disposeBag)</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p><a href="https://github.com/jackyshan/RxSwiftLoginDemo" target="_blank" rel="external">https://github.com/jackyshan/RxSwiftLoginDemo</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RxSwift/" rel="tag"># RxSwift</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/02/iOS设置UIView阴影遇到的一些坑/" rel="next" title="iOS设置UIView阴影遇到的一些坑">
+                <i class="fa fa-chevron-left"></i> iOS设置UIView阴影遇到的一些坑
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/27/写个简单的Swift检测Controller没有销毁的工具/" rel="prev" title="写个简单的Swift检测Controller没有销毁的工具">
+                写个简单的Swift检测Controller没有销毁的工具 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#登录"><span class="nav-number">1.</span> <span class="nav-text">登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册"><span class="nav-number">2.</span> <span class="nav-text">注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#忘记密码"><span class="nav-number">3.</span> <span class="nav-text">忘记密码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#完整代码"><span class="nav-number">4.</span> <span class="nav-text">完整代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/';
+          this.page.identifier = '2018/01/27/使用RxSwift开发登录注册忘记密码模块总结/';
+          this.page.title = '使用RxSwift开发登录注册忘记密码模块总结';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
