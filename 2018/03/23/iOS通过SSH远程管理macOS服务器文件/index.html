@@ -1,0 +1,829 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="以前写过一个iOS客户端播放视频的App，我在macOS搭建了web服务器实现目录浏览功能，把下载的视频资源放到web服务器的目录，这样iOS客户端可以通过webview获取到macOS服务端的视频资源的链接了，从而实现iOS上播放电脑上视频资源的功能。但是用久了之后，发现我看完的电影资源还在那里，每次看视频去找新的没看过的就很麻烦。这样就想能不能写个程序，当我看完这个电影之后，直接删掉这个资源">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS通过SSH远程管理macOS服务器文件">
+<meta property="og:url" content="http://jackyshan.github.io/2018/03/23/iOS通过SSH远程管理macOS服务器文件/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="以前写过一个iOS客户端播放视频的App，我在macOS搭建了web服务器实现目录浏览功能，把下载的视频资源放到web服务器的目录，这样iOS客户端可以通过webview获取到macOS服务端的视频资源的链接了，从而实现iOS上播放电脑上视频资源的功能。但是用久了之后，发现我看完的电影资源还在那里，每次看视频去找新的没看过的就很麻烦。这样就想能不能写个程序，当我看完这个电影之后，直接删掉这个资源">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-fc4b1dd3e805c682.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-d0f1d0a3f617f07d.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-5d7debb9271a0ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-87064f5c87272ce2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-e96bf9a505cf0d14.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-03-23T12:11:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS通过SSH远程管理macOS服务器文件">
+<meta name="twitter:description" content="以前写过一个iOS客户端播放视频的App，我在macOS搭建了web服务器实现目录浏览功能，把下载的视频资源放到web服务器的目录，这样iOS客户端可以通过webview获取到macOS服务端的视频资源的链接了，从而实现iOS上播放电脑上视频资源的功能。但是用久了之后，发现我看完的电影资源还在那里，每次看视频去找新的没看过的就很麻烦。这样就想能不能写个程序，当我看完这个电影之后，直接删掉这个资源">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/301129-fc4b1dd3e805c682.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/03/23/iOS通过SSH远程管理macOS服务器文件/"/>
+
+
+
+
+
+  <title>iOS通过SSH远程管理macOS服务器文件 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/03/23/iOS通过SSH远程管理macOS服务器文件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">iOS通过SSH远程管理macOS服务器文件</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T20:11:19+08:00">
+                2018-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/23/iOS通过SSH远程管理macOS服务器文件/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/03/23/iOS通过SSH远程管理macOS服务器文件/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/301129-fc4b1dd3e805c682.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>以前写过一个iOS客户端播放视频的App，我在macOS搭建了web服务器实现目录浏览功能，把下载的视频资源放到web服务器的目录，这样iOS客户端可以通过webview获取到macOS服务端的视频资源的链接了，从而实现iOS上播放电脑上视频资源的功能。<br>但是用久了之后，发现我看完的电影资源还在那里，每次看视频去找新的没看过的就很麻烦。这样就想能不能写个程序，当我看完这个电影之后，直接删掉这个资源，或者把这个资源移动到其他收藏目录。通过这个想法，找了一些实现方法，感觉还是使用ssh去做比较快和方便。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-d0f1d0a3f617f07d.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="使用分析blink"><a href="#使用分析blink" class="headerlink" title="使用分析blink"></a>使用分析blink</h3><p>本文ssh的功能主要是通过开源工具<a href="https://github.com/blinksh/blink" target="_blank" rel="external">blink</a>实现，窗口实现的逻辑大部分在<code>TermController</code>里面</p>
+<ul>
+<li>创建终端显示器<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (void)createPTY</div><div class="line">&#123;</div><div class="line">  pipe(_pinput);</div><div class="line">  _termout = fterm_open(_terminal, 0);</div><div class="line">  _termerr = fterm_open(_terminal, 0);</div><div class="line">  _termin = fdopen(_pinput[0], &quot;r&quot;);</div><div class="line">  _termsz = malloc(sizeof(struct winsize));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>_terminal</code>是一个<code>UIView</code>，他做了两件事，一个是创建<code>WKWebView</code>用来渲染我们的输入和输出数据，一个是监听键盘事件，把监听到的数据回调给<code>TermController</code>实现数据流的写入。</p>
+<ul>
+<li><p>监听键盘事件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">// If the key is a special key, we do not apply modifiers.</div><div class="line">if (text.length &gt; 1) &#123;</div><div class="line">  // Check if we have a function key</div><div class="line">  NSRange range = [text rangeOfString:@&quot;FKEY&quot;];</div><div class="line">  if (range.location != NSNotFound) &#123;</div><div class="line">    NSString *value = [text substringFromIndex:(range.length)];</div><div class="line">    [_delegate write:[CC FKEY:[value integerValue]]];</div><div class="line">  &#125; else &#123;</div><div class="line">    [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];</div><div class="line">  &#125;</div><div class="line">&#125; else &#123;</div><div class="line">  NSUInteger modifiers = [[_smartKeys view] modifiers];</div><div class="line">  if (modifiers &amp; KbdCtrlModifier) &#123;</div><div class="line">    [_delegate write:[CC CTRL:text]];</div><div class="line">  &#125; else if (modifiers &amp; KbdAltModifier) &#123;</div><div class="line">    [_delegate write:[CC ESC:text]];</div><div class="line">  &#125; else &#123;</div><div class="line">    [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>实现写入数据</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">- (void)write:(NSString *)input</div><div class="line">&#123;</div><div class="line">  // Trasform the string and write it, with the correct sequence</div><div class="line">  const char *str = [input UTF8String];</div><div class="line">  write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>创建session会话<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">  - (void)startSession</div><div class="line">&#123;</div><div class="line">  // Until we are able to duplicate the streams, we have to recreate them.</div><div class="line">  TermStream *stream = [[TermStream alloc] init];</div><div class="line">  stream.in = _termin;</div><div class="line">  stream.out = _termout;</div><div class="line">  stream.err = _termerr;</div><div class="line">  stream.control = self;</div><div class="line">  stream.sz = _termsz;</div><div class="line"></div><div class="line">  _session = [[MCPSession alloc] initWithStream:stream];</div><div class="line">  _session.delegate = self;</div><div class="line">  [_session executeWithArgs:@&quot;&quot;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>有了<code>MCPSession</code>就完成了整个会话的过程，如图<br><img src="http://upload-images.jianshu.io/upload_images/301129-5d7debb9271a0ee3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li><code>WKWebView</code>渲染功能，是通过<code>js</code>加载方法渲染页面<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">// Write data to terminal control</div><div class="line">- (void)write:(NSString *)data</div><div class="line">&#123;</div><div class="line">  [_delegate receiveData:data];</div><div class="line">  </div><div class="line">  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];</div><div class="line">  NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];</div><div class="line">  NSString *jsScript = [NSString stringWithFormat:@&quot;write_to_term(%@[0])&quot;, jsString];</div><div class="line">  </div><div class="line">  dispatch_async(dispatch_get_main_queue(), ^&#123;</div><div class="line">    [_webView evaluateJavaScript:jsScript completionHandler:nil];</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="实现ssh输入输出"><a href="#实现ssh输入输出" class="headerlink" title="实现ssh输入输出"></a>实现ssh输入输出</h3><p><code>blink</code>的ssh功能是在<code>MCPSession</code>里面实现了调用<code>SSHSession</code>，他们都是继承了<code>Session</code>类。<code>SSHSession</code>里面主要是对<code>libssh2</code>的framework提供的api实现了一套ssh的封装，比如登录中密码的判断、公私钥的验证等</p>
+<p><a href="https://www.libssh2.org/" target="_blank" rel="external">libssh2</a> 是一个使用 C 语言编写的以实现 SSH2 协议的代码库。</p>
+<p>SSH 协议的全称是 <a href="https://link.jianshu.com?t=https://zh.wikipedia.org/wiki/Secure_Shell" target="_blank" rel="external">Secure Shell</a>，顾名思义就是为操作系统提供一个安全的 Shell 使得用户在和远程主机进行交互时的数据不易被第三方窃取。除了这个基本的功能之外，它还包含了很多其他的功能，比如 SFTP，端口转发等等。</p>
+<ul>
+<li>实现ssh登录判断<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (void)ssh_login:(NSArray *)ids to:(struct sockaddr *)addr port:(int)port user:(const char *)user timeout:(int)timeout error:(NSError **)error</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>登录成功之后实现<code>SSHSession</code>的输入输出<br>在<code>- (int)ssh_client_loop</code>方法里面有个循环一直在处理输入输出数据流的解析工作</p>
+<ul>
+<li><p>从<code>stream</code>获取流数据，<code>libssh2_channel_read</code>读取字符数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"> // Wait for stream-&gt;in or socket while not ready for reading</div><div class="line"> do &#123;</div><div class="line">   if (!pfds[0].events || pfds[0].revents &amp; (POLLIN)) &#123;</div><div class="line">     // Read from socket</div><div class="line">     do &#123;</div><div class="line">rc = libssh2_channel_read(_channel, inputbuf, BUFSIZ);</div><div class="line">if (rc &gt; 0) &#123;</div><div class="line">  fwrite(inputbuf, rc, 1, _stream.out);</div><div class="line">  pfds[0].events = 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>从<code>stream</code>获取流数据，<code>libssh2_channel_write</code>写入字符数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">   // Input from stream</div><div class="line">   if (pfds[1].revents &amp; POLLIN) &#123;</div><div class="line">     towrite = fread(streambuf, 1, BUFSIZ, _stream.in);</div><div class="line">     rc = 0;</div><div class="line">     do &#123;</div><div class="line">rc = libssh2_channel_write(_channel, streambuf + rc, towrite);</div><div class="line">if (rc &gt; 0) &#123;</div><div class="line">  towrite -= rc;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="实现文件列表和删除"><a href="#实现文件列表和删除" class="headerlink" title="实现文件列表和删除"></a>实现文件列表和删除</h3><p>在连上ssh之后，就可以通过命令实现列表和删除，命令太麻烦，那就写个界面实现操作。</p>
+<ul>
+<li>创建<code>FileCommandDelegate</code>代理和<code>FileCommandViewController</code>类<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@protocol FileCommandDelegate &lt;NSObject&gt;</div><div class="line"></div><div class="line">- (void)excuteCommand:(NSString *)command;</div><div class="line"></div><div class="line">@end</div><div class="line"></div><div class="line">@interface FileCommandViewController : UIViewController</div><div class="line"></div><div class="line">@property (weak) id&lt;FileCommandDelegate&gt; delegate;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在<code>TermController</code>实现代理，执行命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#pragma mark FileCommandDelegate</div><div class="line">- (void)excuteCommand:(NSString *)command &#123;</div><div class="line">  [self write:command];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>连上ssh，代理出去，弹出文件管理页面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">- (void)sshConnected:(BOOL)isConnected &#123;</div><div class="line">  if (isConnected == false) &#123;</div><div class="line">    return;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^&#123;</div><div class="line">    FileCommandViewController *vc = [[FileCommandViewController alloc] init];</div><div class="line">    vc.delegate = self;</div><div class="line">    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:vc];</div><div class="line">    [self presentViewController:navi animated:YES completion:nil];</div><div class="line">  &#125;);</div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ul>
+<li><p>在<code>FileCommandViewController</code>实现数据输入输出的通知</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveData:) name:@&quot;kCommandReceived&quot; object:nil];</div></pre></td></tr></table></figure>
+</li>
+<li><p>过滤获取的数据，实现列表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">- (void)receiveData:(NSNotification * _Nonnull)note &#123;</div><div class="line">  </div><div class="line">  //    NSLog(@&quot;%@&quot;, note.object);</div><div class="line">  </div><div class="line">  NSString *checkString = note.object;</div><div class="line">  //1.创建正则表达式，[0-9]:表示‘0’到‘9’的字符的集合</div><div class="line">  NSString *pattern = @&quot;\\[1m\\[36m.+\\[&quot;;</div><div class="line">  //1.1将正则表达式设置为OC规则</div><div class="line">  NSRegularExpression *regular = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];</div><div class="line">  //2.利用规则测试字符串获取匹配结果</div><div class="line">  NSArray *results = [regular matchesInString:checkString options:0 range:NSMakeRange(0, checkString.length)];</div><div class="line">  </div><div class="line">  if (results.count &gt; 0) &#123;</div><div class="line">    //      NSLog(@&quot;%@&quot;, results);</div><div class="line">    NSMutableArray *reguslars = [NSMutableArray array];</div><div class="line">    [results enumerateObjectsUsingBlock:^(NSTextCheckingResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;</div><div class="line">      NSString *subStr = [checkString substringWithRange:obj.range];</div><div class="line">      NSString *checkString = subStr;</div><div class="line">      //1.创建正则表达式，[0-9]:表示‘0’到‘9’的字符的集合</div><div class="line">      NSString *pattern = @&quot;\\[1m\\[36m&quot;;</div><div class="line">      //1.1将正则表达式设置为OC规则</div><div class="line">      NSRegularExpression *regular = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];</div><div class="line">      //2.利用规则测试字符串获取匹配结果</div><div class="line">      NSArray *results = [regular matchesInString:checkString options:0 range:NSMakeRange(0, checkString.length)];</div><div class="line">      [results enumerateObjectsUsingBlock:^(NSTextCheckingResult *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;</div><div class="line">        NSString *subStr = [checkString substringWithRange:NSMakeRange(obj.range.location+obj.range.length, checkString.length-obj.range.length-obj.range.location)];</div><div class="line">        NSString *checkString = subStr;</div><div class="line">        //1.创建正则表达式，[0-9]:表示‘0’到‘9’的字符的集合</div><div class="line">        NSString *pattern = @&quot;(?=\\[).+&quot;;</div><div class="line">        //1.1将正则表达式设置为OC规则</div><div class="line">        NSRegularExpression *regular = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];</div><div class="line">        //2.利用规则测试字符串获取匹配结果</div><div class="line">        NSArray *results = [regular matchesInString:checkString options:0 range:NSMakeRange(0, checkString.length)];</div><div class="line">        </div><div class="line">        if (results.count &gt; 0) &#123;</div><div class="line">          NSTextCheckingResult *res = results[0];</div><div class="line">          NSString *sst = [checkString substringWithRange:NSMakeRange(0, res.range.location-1)];</div><div class="line">          NSLog(@&quot;%@&quot;, sst);</div><div class="line">          [reguslars addObject:sst];</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">      &#125;];</div><div class="line">      </div><div class="line">    &#125;];</div><div class="line">    </div><div class="line">    _datas = reguslars;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  //1.创建正则表达式，[0-9]:表示‘0’到‘9’的字符的集合</div><div class="line">  NSString *pattern1 = @&quot;\\s\\w+(\\.\\w+)&quot;;</div><div class="line">  //1.1将正则表达式设置为OC规则</div><div class="line">  NSRegularExpression *regular1 = [[NSRegularExpression alloc] initWithPattern:pattern1 options:NSRegularExpressionCaseInsensitive error:nil];</div><div class="line">  //2.利用规则测试字符串获取匹配结果</div><div class="line">  NSArray *results1 = [regular1 matchesInString:checkString options:0 range:NSMakeRange(0, checkString.length)];</div><div class="line">  if (results1.count &gt; 0) &#123;</div><div class="line">    NSMutableArray *reguslars = [NSMutableArray array];</div><div class="line">    [results1 enumerateObjectsUsingBlock:^(NSTextCheckingResult * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;</div><div class="line">      NSString *subStr = [[checkString substringWithRange:obj.range] stringByReplacingOccurrencesOfString:@&quot; &quot; withString:@&quot;&quot;];</div><div class="line">      [reguslars addObject:subStr];</div><div class="line">      </div><div class="line">    &#125;];</div><div class="line">    [reguslars addObjectsFromArray:_datas];</div><div class="line">    _datas = reguslars;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  if (_datas.count &gt; 0) &#123;</div><div class="line">    NSLog(@&quot;%@&quot;, checkString);</div><div class="line">    dispatch_async(dispatch_get_main_queue(), ^&#123;</div><div class="line">      [_tableView reloadData];</div><div class="line">    &#125;);</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>点击刷新获取列表数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (void)refreshList &#123;</div><div class="line">  [_delegate excuteCommand:@&quot;ls\n&quot;];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-87064f5c87272ce2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>左滑删除文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath &#123;</div><div class="line">  </div><div class="line">  [_delegate excuteCommand:[[NSString alloc] initWithFormat:@&quot;rm %@\n&quot;, _datas[indexPath.row]]];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-e96bf9a505cf0d14.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>点击进入目录</li>
+</ul>
+<p>这里判断是不是文件，如果是文件就直接return，不跳转<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath &#123;</div><div class="line">  [tableView deselectRowAtIndexPath:indexPath animated:YES];</div><div class="line">  </div><div class="line">  NSString *checkString = _datas[indexPath.row];</div><div class="line">  //1.创建正则表达式，[0-9]:表示‘0’到‘9’的字符的集合</div><div class="line">  NSString *pattern = @&quot;\\.\\w+&quot;;</div><div class="line">  //1.1将正则表达式设置为OC规则</div><div class="line">  NSRegularExpression *regular = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];</div><div class="line">  //2.利用规则测试字符串获取匹配结果</div><div class="line">  NSArray *results = [regular matchesInString:checkString options:0 range:NSMakeRange(0, checkString.length)];</div><div class="line">  </div><div class="line">  if (results.count &gt; 0) &#123;</div><div class="line">    return;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  [_delegate excuteCommand:[[NSString alloc] initWithFormat:@&quot;cd %@\n&quot;, checkString]];</div><div class="line"></div><div class="line">  FileCommandViewController *vc = [[FileCommandViewController alloc] init];</div><div class="line">  vc.delegate = _delegate;</div><div class="line">  [self.navigationController pushViewController:vc animated:true];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p>现在功能主要实现了列表和删除，出现一个问题，就是中文字符ssh返回的都是<code>???</code>，待研究解决。</p>
+<p><a href="https://github.com/jackyshan/iOSTerminalFromBlinkSSHFileManage" target="_blank" rel="external">https://github.com/jackyshan/iOSTerminalFromBlinkSSHFileManage</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/27/写个简单的Swift检测Controller没有销毁的工具/" rel="next" title="写个简单的Swift检测Controller没有销毁的工具">
+                <i class="fa fa-chevron-left"></i> 写个简单的Swift检测Controller没有销毁的工具
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/23/iOS多线程详解：概念篇/" rel="prev" title="iOS多线程详解：概念篇">
+                iOS多线程详解：概念篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用分析blink"><span class="nav-number">1.</span> <span class="nav-text">使用分析blink</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现ssh输入输出"><span class="nav-number">2.</span> <span class="nav-text">实现ssh输入输出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现文件列表和删除"><span class="nav-number">3.</span> <span class="nav-text">实现文件列表和删除</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-number">4.</span> <span class="nav-text">代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/03/23/iOS通过SSH远程管理macOS服务器文件/';
+          this.page.identifier = '2018/03/23/iOS通过SSH远程管理macOS服务器文件/';
+          this.page.title = 'iOS通过SSH远程管理macOS服务器文件';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

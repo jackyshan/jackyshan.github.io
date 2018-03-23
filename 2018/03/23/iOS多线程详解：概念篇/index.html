@@ -1,0 +1,1065 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS多线程," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="讲多线程这个话题，就免不了先了解多线程相关的技术概念。本文涉及到的技术概念有CPU、进程、线程、同异步、队列等概念。也可能讲的不全或者不足的地方，后续再加以补充，最近一直使用Swift进行开发，本文所有代码例子都会Swift4进行演示。 CPUCPU是什么 引自维基百科CPU中央处理器 （英语：Central Processing Unit，缩写：CPU），是计算机的主要设备之一，功能主要是解释">
+<meta name="keywords" content="iOS多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS多线程详解：概念篇">
+<meta property="og:url" content="http://jackyshan.github.io/2018/03/23/iOS多线程详解：概念篇/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="讲多线程这个话题，就免不了先了解多线程相关的技术概念。本文涉及到的技术概念有CPU、进程、线程、同异步、队列等概念。也可能讲的不全或者不足的地方，后续再加以补充，最近一直使用Swift进行开发，本文所有代码例子都会Swift4进行演示。 CPUCPU是什么 引自维基百科CPU中央处理器 （英语：Central Processing Unit，缩写：CPU），是计算机的主要设备之一，功能主要是解释">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-b23b2a2ecc8c16be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-35e624848548a619.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-20283f3bcbd7e406.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-6b3e0f17dc3acc1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-29eacd86401453d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-5e072e5d2df5b389.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-799eea88ecb805c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-b874dc5bcb560226.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-a8e6c8c2841dc9b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-a8e6c8c2841dc9b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-5782718a2b6e3a04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-194805ad2e7c51c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-6d802467e0d7e547.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-8a3924f342170ccd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-fd60408209a40942.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-057641b244b01cce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-03-23T12:12:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS多线程详解：概念篇">
+<meta name="twitter:description" content="讲多线程这个话题，就免不了先了解多线程相关的技术概念。本文涉及到的技术概念有CPU、进程、线程、同异步、队列等概念。也可能讲的不全或者不足的地方，后续再加以补充，最近一直使用Swift进行开发，本文所有代码例子都会Swift4进行演示。 CPUCPU是什么 引自维基百科CPU中央处理器 （英语：Central Processing Unit，缩写：CPU），是计算机的主要设备之一，功能主要是解释">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/301129-b23b2a2ecc8c16be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/03/23/iOS多线程详解：概念篇/"/>
+
+
+
+
+
+  <title>iOS多线程详解：概念篇 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/03/23/iOS多线程详解：概念篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">iOS多线程详解：概念篇</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-23T20:12:25+08:00">
+                2018-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/23/iOS多线程详解：概念篇/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/03/23/iOS多线程详解：概念篇/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://upload-images.jianshu.io/upload_images/301129-b23b2a2ecc8c16be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>讲多线程这个话题，就免不了先了解多线程相关的技术概念。本文涉及到的技术概念有CPU、进程、线程、同异步、队列等概念。<br>也可能讲的不全或者不足的地方，后续再加以补充，最近一直使用Swift进行开发，本文所有代码例子都会Swift4进行演示。</p>
+<h3 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h3><h4 id="CPU是什么"><a href="#CPU是什么" class="headerlink" title="CPU是什么"></a>CPU是什么</h4><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8" target="_blank" rel="external">CPU</a>中央处理器 （英语：Central Processing Unit，缩写：CPU），是计算机的主要设备之一，功能主要是解释计算机指令以及处理计算机软件中的数据。</p>
+<p>计算机的可编程性主要是指对中央处理器的编程。</p>
+<p>中央处理器、内部存储器和输入／输出设备是现代电脑的三大核心部件。</p>
+<p>1970年代以前，中央处理器由多个独立单元构成，后来发展出由集成电路制造的中央处理器，这些高度收缩的组件就是所谓的微处理器，其中分出的中央处理器最为复杂的电路可以做成单一微小功能强大的单元。</p>
+</blockquote>
+<p><code>CPU</code>主要由运算器、控制器、寄存器三部分组成，从字面意思看就是运算就是起着运算的作用，控制器就是负责发出<code>CPU</code>每条指令所需要的信息，寄存器就是保存运算或者指令的一些临时文件，这样可以保证更高的速度。<br><code>CPU</code>有着处理指令、执行操作、控制时间、处理数据四大作用，打个比喻来说，<code>CPU</code>就像我们的大脑，帮我们完成各种各样的生理活动。因此如果没有<code>CPU</code>，那么电脑就是一堆废物，无法工作。</p>
+<h4 id="多核CPU与多个CPU多核"><a href="#多核CPU与多个CPU多核" class="headerlink" title="多核CPU与多个CPU多核"></a>多核CPU与多个CPU多核</h4><blockquote>
+<p>引自<a href="https://www.zhihu.com/question/20998226/answer/18659825" target="_blank" rel="external">知乎</a>架构可以千变万化，面向需求、综合考量是王道。</p>
+<p>来，简单举个例子。假设现在我们要设计一台计算机的处理器部分的架构。现在摆在我们面前的有两种选择，多个单核CPU和单个多核CPU。如果我们选择多个单核CPU，那么每一个CPU都需要有较为独立的电路支持，有自己的Cache，而他们之间通过板上的总线进行通信。假如在这样的架构上，我们要跑一个多线程的程序（常见典型情况），不考虑超线程，那么每一个线程就要跑在一个独立的CPU上，线程间的所有协作都要走总线，而共享的数据更是有可能要在好几个Cache里同时存在。这样的话，总线开销相比较而言是很大的，怎么办？那么多Cache，即使我们不心疼存储能力的浪费，一致性怎么保证？如果真正做出来，还要在主板上占多块地盘，给布局布线带来更大的挑战，怎么搞定？如果我们选择多核单CPU，那么我们只需要一套芯片组，一套存储，多核之间通过芯片内部总线进行通信，共享使用内存。</p>
+<p>在这样的架构上，如果我们跑一个多线程的程序，那么线程间通信将比上一种情形更快。如果最终实现出来，对板上空间的占用较小，布局布线的压力也较小。看起来，多核单CPU完胜嘛。可是，如果需要同时跑多个大程序怎么办？假设俩大程序，每一个程序都好多线程还几乎用满cache，它们分时使用CPU，那在程序间切换的时候，光指令和数据的替换就要费多大事情啊！所以呢，大部分一般咱们使用的电脑，都是单CPU多核的，比如我们配的Dell T3600，有一颗Intel Xeon E5-1650，6核，虚拟为12个逻辑核心。少部分高端人士需要更强的多任务并发能力，就会搞一个多颗多核CPU的机子，Mac Pro就可以有两颗。</p>
+</blockquote>
+<p><strong>一个核心同时只能处理一个线程，单核CPU只能实现并发，而不是并行</strong>。如果有2个线程，双核<code>CPU</code>，那这两个线程是并行的，如果有三个线程，那么就还是并发的。下面会讲到并发与并行的区别。</p>
+<h3 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h3><h4 id="进程是什么"><a href="#进程是什么" class="headerlink" title="进程是什么"></a>进程是什么</h4><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E8%A1%8C%E7%A8%8B" target="_blank" rel="external">进程</a>（英语：process），是计算机中已运行程序的实体。进程为曾经是分时系统的基本运作单位。在面向进程设计的系统（如早期的UNIX，Linux 2.4及更早的版本）中，进程是程序的基本执行实体；在面向线程设计的系统（如当代多数操作系统、Linux 2.6及更新的版本）中，进程本身不是基本运行单位，而是线程的容器。</p>
+<p>程序本身只是指令、数据及其组织形式的描述，进程才是程序（那些指令和数据）的真正运行实例。</p>
+<p>若干进程有可能与同一个程序相关系，且每个进程皆可以同步（循序）或异步（平行）的方式独立运行。现代计算机系统可在同一段时间内以进程的形式将多个程序加载到内存中，并借由时间共享（或称时分复用），以在一个处理器上表现出同时（平行性）运行的感觉。</p>
+<p>同样的，使用多线程技术（多线程即每一个线程都代表一个进程内的一个独立执行上下文）的操作系统或计算机架构，同样程序的平行线程，可在多CPU主机或网络上真正同时运行（在不同的CPU上）。</p>
+</blockquote>
+<p>在<code>iOS</code>系统中，一个<code>APP</code>的运行实体代表一个进程。一个进程有独立的内存空间、系统资源、端口等。在进程中可以生成多个线程、这些线程可以共享进程中的资源。</p>
+<p>打个比方，<code>CPU</code>好比是一个工厂，进程是一个车间，线程是车间里面的工人。车间的空间是工人们共享的，比如许多房间是每个工人都可以进出的。这象征一个进程的内存空间是共享的，每个线程都可以使用这些共享内存。</p>
+<h4 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h4><p>搜集了一下资料，<code>iOS</code>大概有8种进程间的通信方式，可能不全，后续补充。</p>
+<p><code>iOS</code>系统是相对封闭的系统，<code>App</code>各自在各自的沙盒（sandbox）中运行，每个<code>App</code>都只能读取<code>iPhone</code>上<code>iOS</code>系统为该应用程序程序创建的文件夹<code>AppData</code>下的内容，不能随意跨越自己的沙盒去访问别的<code>App</code>沙盒中的内容。<br>所以<code>iOS</code>的系统中进行<code>App</code>间通信的方式也比较固定，常见的<code>App</code>间通信方式以及使用场景总结如下。</p>
+<ul>
+<li>1、Port (local socket)</li>
+</ul>
+<p>上层封装为<code>NSMachPort</code> : <code>Foundation</code>层<br>中层封装为<code>CFMachPort</code> ： <code>Core Foundation</code>层<br>下层封装为<code>Mach Ports</code> : <code>Mach</code>内核层（线程、进程都可使用它进行通信）</p>
+<p>一个<code>App1</code>在本地的端口<code>port1234</code>进行<code>TCP</code>的<code>bind</code>和<code>listen</code>，另外一个<code>App2</code>在同一个端口<code>port1234</code>发起<code>TCP</code>的<code>connect</code>连接，这样就可以建立正常的<code>TCP</code>连接，进行<code>TCP</code>通信了，那么就想传什么数据就可以传什么数据了。但是有一个限制，就是要求两个<code>App</code>进程都在活跃状态，而没有被后台杀死。尴尬的一点是<code>iOS</code>系统会给每个<code>TCP</code>在后台<code>600</code>秒的网络通信时间，<code>600</code>秒后<code>APP</code>会进入休眠状态。</p>
+<ul>
+<li>2、URL Scheme</li>
+</ul>
+<p>这个是<code>iOS</code> <code>App</code>通信最常用到的通信方式，<code>App1</code>通过<code>openURL</code>的方法跳转到<code>App2</code>，并且在<code>URL</code>中带上想要的参数，有点类似<code>http</code>的<code>get</code>请求那样进行参数传递。这种方式是使用最多的最常见的，使用方法也很简单只需要源<code>App1</code>在<code>info.plist</code>中配置<code>LSApplicationQueriesSchemes</code>，指定目标<code>App2</code>的<code>scheme</code>；然后在目标<code>App2</code>的<code>info.plist</code>中配置好<code>URL types</code>，表示该<code>App</code>接受何种<code>URL Scheme</code>的唤起。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-35e624848548a619.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>典型的使用场景就是各开放平台<code>SDK</code>的分享功能，如分享到微信朋友圈微博等，或者是支付场景。比如从滴滴打车结束行程跳转到微信进行支付。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-20283f3bcbd7e406.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>3、Keychain</li>
+</ul>
+<p><code>iOS</code>系统的<code>Keychain</code>是一个安全的存储容器，它本质上就是一个<code>sqllite</code>数据库，它的位置存储在<code>/private/var/Keychains/keychain-2.db</code>，不过它所保存的所有数据都是经过加密的，可以用来为不同的<code>App</code>保存敏感信息，比如用户名，密码等。<code>iOS</code>系统自己也用<code>Keychain</code>来保存<code>VPN</code>凭证和<code>Wi-Fi</code>密码。它是独立于每个<code>App</code>的沙盒之外的，所以即使<code>App</code>被删除之后，<code>Keychain</code>里面的信息依然存在。</p>
+<p>基于安全和独立于<code>App</code>沙盒的两个特性，<code>Keychain</code>主要用于给<code>App</code>保存登录和身份凭证等敏感信息，这样只要用户登录过，即使用户删除了<code>App</code>重新安装也不需要重新登录。</p>
+<p>那<code>Keychain</code>用于<code>App</code>间通信的一个典型场景也和<code>App</code>的登录相关，就是统一账户登录平台。使用同一个账号平台的多个<code>App</code>，只要其中一个<code>App</code>用户进行了登录，其他app就可以实现自动登录不需要用户多次输入账号和密码。一般开放平台都会提供登录<code>SDK</code>，在这个<code>SDK</code>内部就可以把登录相关的信息都写到<code>Keychain</code>中，这样如果多个<code>App</code>都集成了这个<code>SDK</code>，那么就可以实现统一账户登录了。</p>
+<p><code>Keychain</code>的使用比较简单，使用<code>iOS</code>系统提供的类<code>KeychainItemWrapper</code>，并通过<code>Keychain access groups</code>就可以在应用之间共享<code>Keychain</code>中的数据的数据了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">import Security</div><div class="line">// MARK: - 保存和读取UUID</div><div class="line"></div><div class="line">class func saveUUIDToKeyChain() &#123;</div><div class="line">    var keychainItem = KeychainItemWrapper(account: &quot;Identfier&quot;, service: &quot;AppName&quot;, accessGroup: nil)</div><div class="line">    var string = (keychainItem[(kSecAttrGeneric as! Any)] as! String)</div><div class="line">    if (string == &quot;&quot;) || !string &#123;</div><div class="line">        keychainItem[(kSecAttrGeneric as! Any)] = self.getUUIDString()</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">class func readUUIDFromKeyChain() -&gt; String &#123;</div><div class="line">    var keychainItemm = KeychainItemWrapper(account: &quot;Identfier&quot;, service: &quot;AppName&quot;, accessGroup: nil)</div><div class="line">    var UUID = (keychainItemm[(kSecAttrGeneric as! Any)] as! String)</div><div class="line">    return UUID</div><div class="line">&#125;</div><div class="line"></div><div class="line">class func getUUIDString() -&gt; String &#123;</div><div class="line">    var uuidRef = CFUUIDCreate(kCFAllocatorDefault)</div><div class="line">    var strRef = CFUUIDCreateString(kCFAllocatorDefault, uuidRef)</div><div class="line">    var uuidString = (strRef as! String).replacingOccurrencesOf(&quot;-&quot;, withString: &quot;&quot;)</div><div class="line">    CFRelease(strRef)</div><div class="line">    CFRelease(uuidRef)</div><div class="line">    return uuidString</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>4、UIPasteboard</li>
+</ul>
+<p>顾名思义， <code>UIPasteboard</code>是剪切板功能，因为<code>iOS</code>的原生控件<code>UITextView</code>，<code>UITextField</code> 、<code>UIWebView</code>，我们在使用时如果长按，就会出现复制、剪切、选中、全选、粘贴等功能，这个就是利用了系统剪切板功能来实现的。而每一个App都可以去访问系统剪切板，所以就能够通过系统剪贴板进行<code>App</code>间的数据传输了。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//创建系统剪贴板</div><div class="line">let pasteboard = UIPasteboard.general</div><div class="line">//往剪贴板写入淘口令</div><div class="line">pasteboard.string = &quot;复制这条信息￥rkUy0Mz97CV￥后打开👉手淘👈&quot;</div><div class="line"></div><div class="line">//淘宝从后台切到前台，读取淘口令进行展示</div><div class="line">let alert = UIAlertView.init(title: &quot;淘口令&quot;, message: &quot;发现一个宝贝，口令是rkUy0Mz97CV&quot;, delegate: self, cancelButtonTitle: &quot;取消&quot;, otherButtonTitles: &quot;查看&quot;)</div><div class="line">alert.show()</div></pre></td></tr></table></figure>
+<p><code>UIPasteboard</code>典型的使用场景就是淘宝跟微信/QQ的链接分享。由于腾讯和阿里的公司战略，腾讯在微信和QQ中都屏蔽了淘宝的链接。那如果淘宝用户想通过QQ或者微信跟好友分享某个淘宝商品，怎么办呢？ 阿里的工程师就巧妙的利用剪贴板实现了这个功能。首先淘宝<code>App</code>中将链接自定义成淘口令，引导用户进行复制，并去QQ好友对话中粘贴。然后QQ好友收到消息后再打开自己的淘宝<code>App</code>，淘宝<code>App</code>每次从后台切到前台时，就会检查系统剪切板中是否有淘口令，如果有淘口令就进行解析并跳转到对于的商品页面。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-6b3e0f17dc3acc1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>微信好友把淘口令复制到淘宝中，就可以打开好友分享的淘宝链接了。</p>
+<ul>
+<li>5、UIDocumentInteractionController</li>
+</ul>
+<p><code>UIDocumentInteractionController</code>主要是用来实现同设备上<code>App</code>之间的共享文档，以及文档预览、打印、发邮件和复制等功能。它的使用非常简单.</p>
+<p>首先通过调用它唯一的类方法<code>interactionControllerWithURL:</code>，并传入一个<code>URL(NSURL)</code>，为你想要共享的文件来初始化一个实例对象。然后<code>UIDocumentInteractionControllerDelegate</code>，然后显示菜单和预览窗口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">let url = Bundle.main.url(forResource: &quot;test&quot;, withExtension: &quot;pdf&quot;)</div><div class="line">if url != nil &#123;</div><div class="line">    let documentInteractionController = UIDocumentInteractionController.init(url: url!)</div><div class="line">    documentInteractionController.delegate = self</div><div class="line">    documentInteractionController.presentOpenInMenu(from: self.view.bounds, in: self.view, animated: true)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>效果如下图<br><img src="http://upload-images.jianshu.io/upload_images/301129-29eacd86401453d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>6、AirDrop</li>
+</ul>
+<blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E9%9A%94%E7%A9%BA%E6%8A%95%E9%80%81" target="_blank" rel="external">AirDrop</a>是苹果公司的MacOS和iOS操作系统中的一个随建即连网络，自Mac OS X Lion（Mac OS X 10.7）和iOS 7起引入，允许在支持的麦金塔计算机和iOS设备上传输文件，无需透过邮件或大容量存储设备。</p>
+<p>在OS X Yosemite（OS X 10.10）之前，OS X 中的隔空投送协议不同于iOS的隔空投送协议，因此不能互相传输[2]。但是，OS X Yosemite或更新版本支持iOS的隔空投送协议（使用Wi-Fi和蓝牙），这适用于一台Mac与一台iOS设备以及两台2012年或更新版本的Mac计算机之间的传输。[3][4]使用旧隔空投送协议（只使用Wi-Fi）的旧模式在两台2012年或更早的Mac计算机之间传输也是可行的。[4]</p>
+<p>隔空投送所容纳的文件大小没有限制。苹果用户报告称隔空投送能传输小于10GB的视频文件。</p>
+</blockquote>
+<p><code>iOS</code>并没有直接提供<code>AirDrop</code>的实现接口，但是使用<code>UIActivityViewController</code>的方法唤起<code>AirDrop</code>，进行数据交互。</p>
+<ul>
+<li>7、UIActivityViewController</li>
+</ul>
+<p><code>UIActivityViewController</code>类是一个标准的<code>ViewController</code>，提供了几项标准的服务，比如复制项目至剪贴板，把内容分享至社交网站，以及通过<code>Messages</code>发送数据等等。在<code>iOS 7 SDK</code>中，<code>UIActivityViewController</code>类提供了内置的<code>AirDrop</code>功能。</p>
+<p>如果你有一些数据一批对象需要通过<code>AirDrop</code>进行分享，你所需要的是通过对象数组初始化<code>UIActivityViewController</code>，并展示在屏幕上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil]; </div><div class="line">[self presentViewController:controller animated:YES completion:nil];</div></pre></td></tr></table></figure>
+<p>效果图如下<br><img src="http://upload-images.jianshu.io/upload_images/301129-5e072e5d2df5b389.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>8、App Groups</li>
+</ul>
+<p><code>App Group</code>用于同一个开发团队开发的<code>App</code>之间，包括<code>App</code>和<code>Extension</code>之间共享同一份读写空间，进行数据共享。同一个团队开发的多个应用之间如果能直接数据共享，大大提高用户体验。</p>
+<p>实现细节参考<a href="https://www.jianshu.com/p/94d4106b9298" target="_blank" rel="external">App之间的数据共享——<code>App Group</code>的配置</a></p>
+<h3 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h3><h4 id="线程是什么"><a href="#线程是什么" class="headerlink" title="线程是什么"></a>线程是什么</h4><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E7%BA%BF%E7%A8%8B" target="_blank" rel="external">线程</a>（英语：thread）是操作系统能够进行运算调度的最小单位。它被包含在进程之中，是进程中的实际运作单位。</p>
+<p>一条线程指的是进程中一个单一顺序的控制流，一个进程中可以并发多个线程，每条线程并行执行不同的任务。在Unix System V及SunOS中也被称为轻量进程（lightweight processes），但轻量进程更多指内核线程（kernel thread），而把用户线程（user thread）称为线程。</p>
+</blockquote>
+<p>讲线程就不能不提任务，任务是什么的，通俗的说任务就是就一件事情或一段代码，线程其实就是去执行这件事情。</p>
+<blockquote>
+<p>线程（thread），指的是一个独立的代码执行路径，也就是说线程是代码执行路径的最小分支。在 iOS 中，线程的底层实现是基于 POSIX threads API 的，也就是我们常说的 pthreads ；</p>
+</blockquote>
+<h4 id="超线程技术"><a href="#超线程技术" class="headerlink" title="超线程技术"></a>超线程技术</h4><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E8%B6%85%E5%9F%B7%E8%A1%8C%E7%B7%92" target="_blank" rel="external">超线程</a>（HT, Hyper-Threading）超线程技术就是利用特殊的硬件指令，把一个物理内核模拟成两个逻辑内核，让单个处理器都能使用线程级并行计算，进而兼容多线程操作系统和软件，减少了CPU的闲置时间，提高了CPU的运行速度。 采用超线程即是可在同一时间里，应用程序可以使用芯片的不同部分。</p>
+<p>引自<a href="https://www.zhihu.com/question/30313735/answer/48006772" target="_blank" rel="external">知乎</a>超线程这个东西并不是开了就一定比不开的好。因为每个CPU核心里ALU，FPU这些运算单元的数量是有限的，而超线程的目的之一就是在一个线程用运算单元少的情况下，让另外一个线程跑起来，不让运算单元闲着。但是如果当一个线程整数，浮点运算各种多，当前核心运算单元没多少空闲了，这时候你再塞进了一个线程，这下子资源就紧张了。两线程就会互相抢资源，拖慢对方速度。至于，超线程可以解决一个线程cache miss，另外一个可以顶上，但是如果两个线程都miss了，那就只有都在等了。这个还是没有GPU里一个SM里很多warp，超多线程同时跑来得有效果。所以，如果你的程序是单线程，关了超线程，免得别人抢你资源，如果是多线程，每个线程运算不大，超线程比较有用。</p>
+</blockquote>
+<h4 id="线程间通信"><a href="#线程间通信" class="headerlink" title="线程间通信"></a>线程间通信</h4><p>线程间通信的表现为：一个线程传递数据给另一个线程；在一个线程中执行完特定任务后，转到另一个线程继续执行任务。</p>
+<p>下面主要是介绍<strong>其他线程执行耗时任务，在主线程进行UI的刷新</strong>，也是业务中比较常用的一种。</p>
+<ul>
+<li>1、NSThread线程间通信</li>
+</ul>
+<p><strong>NSThread是用Swift语言里的Thread</strong></p>
+<p><code>NSThread</code>这套方案是经过苹果封装后，并且完全面向对象的。所以你可以直接操控线程对象，非常直观和方便。不过它的生命周期还是需要我们手动管理，所以实际上使用也比较少，使用频率较多的是<code>GCD</code>以及<code>NSOperation</code>。</p>
+<p>当然，<code>NSThread</code>还可以用来做线程间通讯，比如下载图片并展示为例，将下载耗时操作放在子线程，下载完成后再切换回主线程在<code>UI</code>界面对图片进行展示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">func onThread() &#123;</div><div class="line">    let urlStr = &quot;http://tupian.aladd.net/2015/7/2941.jpg&quot;</div><div class="line">    self.performSelector(inBackground: #selector(downloadImg(_:)), with: urlStr)</div><div class="line">&#125;</div><div class="line"></div><div class="line">@objc func downloadImg(_ urlStr: String) &#123;</div><div class="line">    //打印当前线程</div><div class="line">    print(&quot;下载图片线程&quot;, Thread.current)</div><div class="line">    </div><div class="line">    //获取图片链接</div><div class="line">    guard let url = URL.init(string: urlStr) else &#123;return&#125;</div><div class="line">    //下载图片二进制数据</div><div class="line">    guard let data = try? Data.init(contentsOf: url) else &#123;return&#125;</div><div class="line">    //设置图片</div><div class="line">    guard let img = UIImage.init(data: data) else &#123;return&#125;</div><div class="line">    </div><div class="line">    //回到主线程刷新UI</div><div class="line">    self.performSelector(onMainThread: #selector(downloadFinished(_:)), with: img, waitUntilDone: false)</div><div class="line">&#125;</div><div class="line"></div><div class="line">@objc func downloadFinished(_ img: UIImage) &#123;</div><div class="line">    //打印当前线程</div><div class="line">    print(&quot;刷新UI线程&quot;, Thread.current)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>下载图片线程 <nsthread: 0x1c4464a00="">{number = 5, name = (null)}<br>刷新UI线程 <nsthread: 0x1c007a400="">{number = 1, name = main}</nsthread:></nsthread:></p>
+</blockquote>
+<p>有的小伙伴应该会有疑问，<strong>为什么执行的<code>NSObject</code>的方法实现的线程，怎么变成了<code>NSThread</code>的线程呢。</strong><br>其实这个方法是<code>NSObject</code>对<code>NSThread</code>的封装，方便快速实现线程的方法，下个断点验证下看看。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-799eea88ecb805c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>2、GCD线程间通信</li>
+</ul>
+<p><code>GCD（Grand Central Dispatch）</code>伟大的中央调度系统，是苹果为多核并行运算提出的C语言并发技术框架。<br><code>GCD</code>会自动利用更多的<code>CPU</code>内核。<br>会自动管理线程的生命周期（创建线程，调度任务，销毁线程等）。<br>程序员只需要告诉<code>GCD</code>想要如何执行什么任务，不需要编写任何线程管理代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">func onThread() &#123;</div><div class="line">    let urlStr = &quot;http://tupian.aladd.net/2015/7/2941.jpg&quot;</div><div class="line"></div><div class="line">    let dsp = DispatchQueue.init(label: &quot;com.jk.thread&quot;)</div><div class="line">    dsp.async &#123;</div><div class="line">        self.downloadImg(urlStr)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@objc func downloadImg(_ urlStr: String) &#123;</div><div class="line">    //打印当前线程</div><div class="line">    print(&quot;下载图片线程&quot;, Thread.current)</div><div class="line">    </div><div class="line">    //获取图片链接</div><div class="line">    guard let url = URL.init(string: urlStr) else &#123;return&#125;</div><div class="line">    //下载图片二进制数据</div><div class="line">    guard let data = try? Data.init(contentsOf: url) else &#123;return&#125;</div><div class="line">    //设置图片</div><div class="line">    guard let img = UIImage.init(data: data) else &#123;return&#125;</div><div class="line">    </div><div class="line">    //回到主线程刷新UI</div><div class="line">    DispatchQueue.main.async &#123;</div><div class="line">        self.downloadFinished(img)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@objc func downloadFinished(_ img: UIImage) &#123;</div><div class="line">    //打印当前线程</div><div class="line">    print(&quot;刷新UI线程&quot;, Thread.current)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>下载图片线程 <nsthread: 0x1c426b9c0="">{number = 4, name = (null)}<br>刷新UI线程 <nsthread: 0x1c0263140="">{number = 1, name = main}</nsthread:></nsthread:></p>
+</blockquote>
+<ul>
+<li>3、NSOperation线程间通信</li>
+</ul>
+<p><strong>NSOperation是用Swift语言里的Operation</strong></p>
+<p><code>NSOperation</code>是苹果推荐使用的并发技术，它提供了一些用<code>GCD</code>不是很好实现的功能。相比<code>GCD</code>，<code>NSOperation</code>的使用更加简单。<code>NSOperation</code>是一个抽象类，也就是说它并不能直接使用，而是应该使用它的子类。<strong><code>Swift</code>里面可以使用<code>BlockOperation</code>和自定义继承自<code>Operation</code>的子类。</strong></p>
+<p><code>NSOperation</code>的使用常常是配合<code>NSOperationQueue</code>来进行的。只要是使用<code>NSOperation</code>的子类创建的实例就能添加到<code>NSOperationQueue</code>操作队列之中，一旦添加到队列，操作就会自动异步执行（注意是异步）。如果没有添加到队列，而是使用<code>start</code>方法，则会在当前线程执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">func onThread() &#123;</div><div class="line">    let urlStr = &quot;http://tupian.aladd.net/2015/7/2941.jpg&quot;</div><div class="line"></div><div class="line">    let que = OperationQueue.init()</div><div class="line">    que.addOperation &#123;</div><div class="line">        self.downloadImg(urlStr)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@objc func downloadImg(_ urlStr: String) &#123;</div><div class="line">    //打印当前线程</div><div class="line">    print(&quot;下载图片线程&quot;, Thread.current)</div><div class="line">    </div><div class="line">    //获取图片链接</div><div class="line">    guard let url = URL.init(string: urlStr) else &#123;return&#125;</div><div class="line">    //下载图片二进制数据</div><div class="line">    guard let data = try? Data.init(contentsOf: url) else &#123;return&#125;</div><div class="line">    //设置图片</div><div class="line">    guard let img = UIImage.init(data: data) else &#123;return&#125;</div><div class="line">    </div><div class="line">    //回到主线程刷新UI</div><div class="line">    OperationQueue.main.addOperation &#123;</div><div class="line">        self.downloadFinished(img)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@objc func downloadFinished(_ img: UIImage) &#123;</div><div class="line">    //打印当前线程</div><div class="line">    print(&quot;刷新UI线程&quot;, Thread.current)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>下载图片线程 <nsthread: 0x1c4271d80="">{number = 3, name = (null)}<br>刷新UI线程 <nsthread: 0x1c006cac0="">{number = 1, name = main}</nsthread:></nsthread:></p>
+</blockquote>
+<p><code>OperationQueue</code>的对象执行<code>addOperation</code>的方法，其实是生成了一个<code>BlockOperation</code>对象，异步执行当前任务。<br>下个断点，可以看到<code>BlockOperation</code>的执行过程。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-b874dc5bcb560226.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h4 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h4><blockquote>
+<p><a href="https://zh.wikipedia.org/zh-hans/线程池" target="_blank" rel="external">线程池</a>（英语：thread pool）：一种线程使用模式。 线程过多会带来调度开销，进而影响缓存局部性和整体性能。 而线程池维护着多个线程，等待着监督管理者分配可并发执行的任务。 这避免了在处理短时间任务时创建与销毁线程的代价。</p>
+</blockquote>
+<p>线程池的执行流程如：<br>首先，启动若干数量的线程，并让这些线程处于睡眠状态<br>其次，当客户端有新的请求时，线程池会唤醒某一个睡眠线程，让它来处理客户端的请求<br>最后，当请求处理完毕，线程又处于睡眠状态</p>
+<p><strong>所以在并发的时候，同时能有多少线程在跑是有线程池的线程缓存数量决定的。</strong></p>
+<ul>
+<li>1、GCD</li>
+</ul>
+<p><code>GCD</code>有一个底层线程池，这个池中存放的是一个个的线程。之所以称为“池”，很容易理解出这个“池”中的线程是可以重用的，当一段时间后这个线程没有被调用的话，这个线程就会被销毁。池是系统自动来维护，不需要我们手动来维护。</p>
+<p>那<code>GCD</code>底层线程池的缓存数到底有多少个的，写段代码跑一下看看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let dsp = DispatchQueue.init(label: &quot;com.jk.thread&quot;, attributes: .concurrent)</div><div class="line">    for i in 0..&lt;10000 &#123;</div><div class="line">        dsp.async &#123;</div><div class="line">            //打印当前线程</div><div class="line">            print(&quot;\(i)当前线程&quot;, Thread.current)</div><div class="line">            //耗时任务</div><div class="line">            Thread.sleep(forTimeInterval: 5)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-a8e6c8c2841dc9b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>这段代码是生成了一个并发队列，<code>for</code>循环<code>10000</code>次，执行异步任务，相当于会生成<code>10000</code>条线程，由于异步执行任务，会立即执行而且不会等待任务的结束，所以在生成线程的时候，线程打印就立即执行了。从打印的结果来看，<strong>一次打印总共有<code>64</code>行，从而可以得出<code>GCD</code>的线程池缓存数量是<code>64</code>条</strong>。<br>当然如果想实现更多线程的并发执行的话，可以使用开源的<a href="https://github.com/ibireme/YYDispatchQueuePool" target="_blank" rel="external">YYDispatchQueuePool</a>。</p>
+<ul>
+<li>2、NSOperation</li>
+</ul>
+<p><code>NSOperationQueue</code>提供了一套类似于线程池的机制，通过它可以更加方便的进行多线程的并发操作，构造一个线程池并添加任务对象到线程池中，线程池会分配线程，调用任务对象的<code>main</code>方法执行任务。</p>
+<p>下面写段代码，分配<code>maxConcurrentOperationCount</code>为<code>3</code>个，看看效果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let opq = OperationQueue.init()</div><div class="line">    opq.maxConcurrentOperationCount = 3</div><div class="line">    for i in 0..&lt;10 &#123;</div><div class="line">        opq.addOperation(&#123;</div><div class="line">            //打印当前线程</div><div class="line">            print(&quot;\(i)当前线程&quot;, Thread.current)</div><div class="line">            //耗时任务</div><div class="line">            Thread.sleep(forTimeInterval: 5)</div><div class="line">        &#125;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>1当前线程 <nsthread: 0x1c0274a80="">{number = 4, name = (null)}<br>0当前线程 <nsthread: 0x1c4673900="">{number = 6, name = (null)}<br>2当前线程 <nsthread: 0x1c4674040="">{number = 7, name = (null)}</nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<p>可以看到，规定线程池缓存为<code>3</code>个，一次就打印<code>3</code>个线程，当这<code>3</code>个线程回收到线程池里，又会再打印<code>3</code>个，当然<strong>如果其中一个线程先执行完，他就会先被回收</strong>。</p>
+<p><code>NSOperationQueue</code>一次能够并发执行多少线程呢，跑一下下面代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let opq = OperationQueue.init()</div><div class="line">    opq.maxConcurrentOperationCount = 300</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        opq.addOperation(&#123;</div><div class="line">            //打印当前线程</div><div class="line">            print(&quot;\(i)当前线程&quot;, Thread.current)</div><div class="line">            //耗时任务</div><div class="line">            Thread.sleep(forTimeInterval: 5)</div><div class="line">        &#125;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-a8e6c8c2841dc9b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>可以看到也是<code>64</code>个，也就是<strong><code>NSOperationQueue</code>多了可以操作线程数量的接口，但是最大的线程并发数量还是<code>64</code>个</strong>。</p>
+<h4 id="多线程同步"><a href="#多线程同步" class="headerlink" title="多线程同步"></a>多线程同步</h4><h5 id="1、多线程同步是什么"><a href="#1、多线程同步是什么" class="headerlink" title="1、多线程同步是什么"></a>1、多线程同步是什么</h5><blockquote>
+<p>引自百度百科<a href="https://baike.baidu.com/item/%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5" target="_blank" rel="external">同步</a>就是协同步调，按预定的先后次序进行运行。可理解为线程A和B一块配合，A执行到一定程度时要依靠B的某个结果，于是停下来，示意B运行；B依言执行，再将结果给A；A再继续操作。</p>
+</blockquote>
+<p>线程同步其实是对于并发队列说的，串行队列的任务是依次执行的，本身就是同步的。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-5782718a2b6e3a04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="2、多线程同步用途"><a href="#2、多线程同步用途" class="headerlink" title="2、多线程同步用途"></a>2、多线程同步用途</h5><p><strong>结果传递</strong>：A执行到一定程度时要依靠B的某个结果，于是停下来，示意B运行；B依言执行，再将结果给A；A再继续操作。例子，小明、小李有三个西瓜，这个三个西瓜可以同时切开（并发），全部切完之后放到冰箱里冰好（同步），小明、小李吃冰西瓜（并发）。</p>
+<p><strong>资源竞争</strong>：是指多个线程同时访问一个资源时可能存在竞争问题提供的解决方案，使多个线程可以对同一个资源进行操作，比如线程A为数组M添加了一个数据，线程B可以接收到添加数据后的数组M。线程同步就是线程之间相互的通信。例子，购买火车票，多个窗口卖票（并发），票卖出去之后要把库存减掉（同步），多个窗口出票成功（并发）。</p>
+<h5 id="3、多线程同步实现"><a href="#3、多线程同步实现" class="headerlink" title="3、多线程同步实现"></a>3、多线程同步实现</h5><p>多线程同步实现的方式有很多信号量(<code>DispatchSemaphore</code>)、锁(<code>NSLock</code>)、<code>@synchronized</code>、<code>dispatch_barrier_async</code>、<code>addDependency</code>、<code>pthread_mutex_t</code>，下面用这个方式实现火车票的去库存的情况。</p>
+<ul>
+<li>DispatchSemaphore</li>
+</ul>
+<blockquote>
+<p>GCD中信号量，也可以解决资源抢占问题，支持信号通知和信号等待。每当发送一个信号通知，则信号量+1；每当发送一个等待信号时信号量-1；如果信号量为0则信号会处于等待状态，直到信号量大于0开始执行。</p>
+</blockquote>
+<p>简单地说就是洗手间只有一个坑位，外面进来一个人把门关上，其他人排队，这个人把门打开出去之后，可以再进来一个人。代码例子如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">var tickets: [Int] = [Int]()</div><div class="line"></div><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let que = DispatchQueue.init(label: &quot;com.jk.thread&quot;, attributes: .concurrent)</div><div class="line">    </div><div class="line">    //生成100张票</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        tickets.append(i)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //北京卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //上海卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//存在一个坑位</div><div class="line">let semp = DispatchSemaphore.init(value: 1)</div><div class="line"></div><div class="line">func saleTicket() &#123;</div><div class="line">    while true &#123;</div><div class="line">        //占坑，坑位减一</div><div class="line">        semp.wait()</div><div class="line">        </div><div class="line">        if tickets.count &gt; 0 &#123;</div><div class="line">            print(&quot;剩余票数&quot;, tickets.count, &quot;卖票窗口&quot;, Thread.current)</div><div class="line">            tickets.removeLast()</div><div class="line">            Thread.sleep(forTimeInterval: 0.2)</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            print(&quot;票已经卖完了&quot;)</div><div class="line">            </div><div class="line">            //释放占坑，坑位加一</div><div class="line">            semp.signal()</div><div class="line">            </div><div class="line">            break</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //释放占坑，坑位加一</div><div class="line">        semp.signal()</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>剩余票数 100 卖票窗口 <nsthread: 0x1c0472e40="">{number = 6, name = (null)}<br>剩余票数 99 卖票窗口 <nsthread: 0x1c027b540="">{number = 4, name = (null)}<br>剩余票数 98 卖票窗口 <nsthread: 0x1c0472e40="">{number = 6, name = (null)}<br>剩余票数 97 卖票窗口 <nsthread: 0x1c027b540="">{number = 4, name = (null)}<br>剩余票数 96 卖票窗口 <nsthread: 0x1c0472e40="">{number = 6, name = (null)}<br>剩余票数 95 卖票窗口 <nsthread: 0x1c027b540="">{number = 4, name = (null)}<br>……………..<br>剩余票数 4 卖票窗口 <nsthread: 0x1c0472e40="">{number = 6, name = (null)}<br>剩余票数 3 卖票窗口 <nsthread: 0x1c027b540="">{number = 4, name = (null)}<br>剩余票数 2 卖票窗口 <nsthread: 0x1c0472e40="">{number = 6, name = (null)}<br>剩余票数 1 卖票窗口 <nsthread: 0x1c027b540="">{number = 4, name = (null)}<br>票已经卖完了<br>票已经卖完了</nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<p>在不使用信号量的情况下，运行一段时间就会崩溃，这是多线程同事操作<code>tickets</code>票池的<code>removeLast</code>去库存的方法引起的，这样显然不符合我们的需求，所以我们需要考虑线程安全问题。</p>
+<ul>
+<li>NSLock</li>
+</ul>
+<blockquote>
+<p>锁的概念，锁是最常用的同步工具。一段代码段在同一个时间只能允许被一个线程访问，比如一个线程A进入加锁代码之后由于已经加锁，另一个线程B就无法访问，只有等待前一个线程A执行完加锁代码后解锁，B线程才能访问加锁代码。<br>不要将过多的其他操作代码放到里面，否则一个线程执行的时候另一个线程就一直在等待，就无法发挥多线程的作用了。</p>
+</blockquote>
+<p>在<code>Cocoa</code>程序中<code>NSLock</code>中实现了一个简单的互斥锁，实现了<code>NSLocking Protocol</code>。实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">var tickets: [Int] = [Int]()</div><div class="line"></div><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let que = DispatchQueue.init(label: &quot;com.jk.thread&quot;, attributes: .concurrent)</div><div class="line">    </div><div class="line">    //生成100张票</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        tickets.append(i)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //北京卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //上海卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//生成一个锁</div><div class="line">let lock = NSLock.init()</div><div class="line"></div><div class="line">func saleTicket() &#123;</div><div class="line">    while true &#123;</div><div class="line">        //关门，执行任务</div><div class="line">        lock.lock()</div><div class="line">        </div><div class="line">        if tickets.count &gt; 0 &#123;</div><div class="line">            print(&quot;剩余票数&quot;, tickets.count, &quot;卖票窗口&quot;, Thread.current)</div><div class="line">            tickets.removeLast()</div><div class="line">            Thread.sleep(forTimeInterval: 0.2)</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            print(&quot;票已经卖完了&quot;)</div><div class="line">            </div><div class="line">            //开门，让其他任务可以执行</div><div class="line">            lock.unlock()</div><div class="line">            </div><div class="line">            break</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //开门，让其他任务可以执行</div><div class="line">        lock.unlock()</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>剩余票数 100 卖票窗口 <nsthread: 0x1c467d300="">{number = 6, name = (null)}<br>剩余票数 99 卖票窗口 <nsthread: 0x1c4862380="">{number = 7, name = (null)}<br>剩余票数 98 卖票窗口 <nsthread: 0x1c467d300="">{number = 6, name = (null)}<br>剩余票数 97 卖票窗口 <nsthread: 0x1c4862380="">{number = 7, name = (null)}<br>剩余票数 96 卖票窗口 <nsthread: 0x1c467d300="">{number = 6, name = (null)}<br>剩余票数 95 卖票窗口 <nsthread: 0x1c4862380="">{number = 7, name = (null)}<br>……………..<br>剩余票数 4 卖票窗口 <nsthread: 0x1c467d300="">{number = 6, name = (null)}<br>剩余票数 3 卖票窗口 <nsthread: 0x1c4862380="">{number = 7, name = (null)}<br>剩余票数 2 卖票窗口 <nsthread: 0x1c467d300="">{number = 6, name = (null)}<br>剩余票数 1 卖票窗口 <nsthread: 0x1c4862380="">{number = 7, name = (null)}<br>票已经卖完了<br>票已经卖完了</nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<ul>
+<li>@synchronized</li>
+</ul>
+<p>在<code>Objective-C</code>中，我们可以用<code>@synchronized</code>关键字来修饰一个对象，并为其自动加上和解除互斥锁。<br>但是在Swift中，没有与之对应的方法，即<code>@synchronized</code>在<code>Swift</code>中已经（或者是暂时）不存在了。其实<code>@synchronized</code>在幕后做的事情是调用了<code>objc_sync</code>中的<code>objc_sync_enter</code>和<code>objc_sync_exit</code>方法，我可以直接调用这两个方法去实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">var tickets: [Int] = [Int]()</div><div class="line">    </div><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let que = DispatchQueue.init(label: &quot;com.jk.thread&quot;, attributes: .concurrent)</div><div class="line">    </div><div class="line">    //生成100张票</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        tickets.append(i)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //北京卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //上海卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func saleTicket() &#123;</div><div class="line">    while true &#123;</div><div class="line">        //加锁，关门，执行任务</div><div class="line">        objc_sync_enter(self)</div><div class="line">        </div><div class="line">        if tickets.count &gt; 0 &#123;</div><div class="line">            print(&quot;剩余票数&quot;, tickets.count, &quot;卖票窗口&quot;, Thread.current)</div><div class="line">            tickets.removeLast()</div><div class="line">            Thread.sleep(forTimeInterval: 0.2)</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            print(&quot;票已经卖完了&quot;)</div><div class="line">            </div><div class="line">            //开锁，开门，让其他任务可以执行</div><div class="line">            objc_sync_exit(self)</div><div class="line">            </div><div class="line">            break</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //开锁，开门，让其他任务可以执行</div><div class="line">        objc_sync_exit(self)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>剩余票数 100 卖票窗口 <nsthread: 0x1c04697c0="">{number = 6, name = (null)}<br>剩余票数 99 卖票窗口 <nsthread: 0x1c44706c0="">{number = 4, name = (null)}<br>剩余票数 98 卖票窗口 <nsthread: 0x1c04697c0="">{number = 6, name = (null)}<br>剩余票数 97 卖票窗口 <nsthread: 0x1c44706c0="">{number = 4, name = (null)}<br>剩余票数 96 卖票窗口 <nsthread: 0x1c04697c0="">{number = 6, name = (null)}<br>……………..<br>剩余票数 3 卖票窗口 <nsthread: 0x1c44706c0="">{number = 4, name = (null)}<br>剩余票数 2 卖票窗口 <nsthread: 0x1c04697c0="">{number = 6, name = (null)}<br>剩余票数 1 卖票窗口 <nsthread: 0x1c44706c0="">{number = 4, name = (null)}<br>票已经卖完了<br>票已经卖完了</nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<ul>
+<li>GCD 栅栏方法：dispatch_barrier_async</li>
+</ul>
+<blockquote>
+<p>我们有时需要异步执行两组操作，而且第一组操作执行完之后，才能开始执行第二组操作。这样我们就需要一个相当于 栅栏 一样的一个方法将两组异步执行的操作组给分割起来，当然这里的操作组里可以包含一个或多个任务。这就需要用到dispatch_barrier_async方法在两个操作组间形成栅栏。<br>dispatch_barrier_async函数会等待前边追加到并发队列中的任务全部执行完毕之后，再将指定的任务追加到该异步队列中。然后在dispatch_barrier_async函数追加的任务执行完毕之后，异步队列才恢复为一般动作，接着追加任务到该异步队列并开始执行。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">var tickets: [Int] = [Int]()</div><div class="line"></div><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let que = DispatchQueue.init(label: &quot;com.jk.thread&quot;, attributes: .concurrent)</div><div class="line">    </div><div class="line">    //生成100张票</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        tickets.append(i)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    for _ in 0..&lt;51 &#123;</div><div class="line">        //北京卖票窗口</div><div class="line">        que.async &#123;</div><div class="line">            self.saleTicket()</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //GCD 栅栏方法，同步去库存</div><div class="line">        que.async(flags: .barrier) &#123;</div><div class="line">            if self.tickets.count &gt; 0 &#123;</div><div class="line">                self.tickets.removeLast()</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //上海卖票窗口</div><div class="line">        que.async &#123;</div><div class="line">            self.saleTicket()</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //GCD 栅栏方法，同步去库存</div><div class="line">        que.async(flags: .barrier) &#123;</div><div class="line">            if self.tickets.count &gt; 0 &#123;</div><div class="line">                self.tickets.removeLast()</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func saleTicket() &#123;</div><div class="line">    if tickets.count &gt; 0 &#123;</div><div class="line">        print(&quot;剩余票数&quot;, tickets.count, &quot;卖票窗口&quot;, Thread.current)</div><div class="line">        Thread.sleep(forTimeInterval: 0.2)</div><div class="line">    &#125;</div><div class="line">    else &#123;</div><div class="line">        print(&quot;票已经卖完了&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>剩余票数 100 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>剩余票数 99 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>剩余票数 98 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>剩余票数 97 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>……………..<br>剩余票数 59 卖票窗口 <nsthread: 0x1c0670100="">{number = 6, name = (null)}<br>剩余票数 58 卖票窗口 <nsthread: 0x1c0670100="">{number = 6, name = (null)}<br>剩余票数 57 卖票窗口 <nsthread: 0x1c0670100="">{number = 6, name = (null)}<br>剩余票数 56 卖票窗口 <nsthread: 0x1c0670100="">{number = 6, name = (null)}<br>……………..<br>剩余票数 3 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>剩余票数 2 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>剩余票数 1 卖票窗口 <nsthread: 0x1c0463c40="">{number = 3, name = (null)}<br>票已经卖完了<br>票已经卖完了</nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<ul>
+<li>addDependency(操作依赖)</li>
+</ul>
+<blockquote>
+<p>NSOperation、NSOperationQueue最吸引人的地方是它能添加操作之间的依赖关系。通过操作依赖，我们可以很方便的控制操作之间的执行先后顺序。下面使用操作依赖实现多线程同步，代码如下。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">var tickets: [Int] = [Int]()</div><div class="line"></div><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let que = OperationQueue.init()//并发队列</div><div class="line">    que.maxConcurrentOperationCount = 1</div><div class="line">    </div><div class="line">    //生成100张票</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        tickets.append(i)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    for _ in 0..&lt;51 &#123;</div><div class="line">        //addDependency方法，同步去库存</div><div class="line">        let sync1 = BlockOperation.init(block: &#123;</div><div class="line">            if self.tickets.count &gt; 0 &#123;</div><div class="line">                self.tickets.removeLast()</div><div class="line">            &#125;</div><div class="line">        &#125;)</div><div class="line">        </div><div class="line">        //北京卖票窗口</div><div class="line">        let bj = BlockOperation.init(block: &#123;</div><div class="line">            self.saleTicket()</div><div class="line">        &#125;)</div><div class="line">        bj.addDependency(sync1)//等待去库存</div><div class="line">        </div><div class="line">        //addDependency方法，同步去库存</div><div class="line">        let sync2 = BlockOperation.init(block: &#123;</div><div class="line">            if self.tickets.count &gt; 0 &#123;</div><div class="line">                self.tickets.removeLast()</div><div class="line">            &#125;</div><div class="line">        &#125;)</div><div class="line">        </div><div class="line">        //上海卖票窗口</div><div class="line">        let sh = BlockOperation.init(block: &#123;</div><div class="line">            self.saleTicket()</div><div class="line">        &#125;)</div><div class="line">        sh.addDependency(sync2)//等待去库存</div><div class="line">        </div><div class="line">        que.addOperation(sync1)</div><div class="line">        que.addOperation(bj)</div><div class="line">        que.addOperation(sync2)</div><div class="line">        que.addOperation(sh)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">func saleTicket() &#123;</div><div class="line">    if tickets.count &gt; 0 &#123;</div><div class="line">        print(&quot;剩余票数&quot;, tickets.count, &quot;卖票窗口&quot;, Thread.current)</div><div class="line">        Thread.sleep(forTimeInterval: 0.2)</div><div class="line">    &#125;</div><div class="line">    else &#123;</div><div class="line">        print(&quot;票已经卖完了&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>剩余票数 99 卖票窗口 <nsthread: 0x1c42672c0="">{number = 4, name = (null)}<br>剩余票数 98 卖票窗口 <nsthread: 0x1c06731c0="">{number = 5, name = (null)}<br>剩余票数 97 卖票窗口 <nsthread: 0x1c06731c0="">{number = 5, name = (null)}<br>剩余票数 96 卖票窗口 <nsthread: 0x1c06731c0="">{number = 5, name = (null)<br>……………..<br>剩余票数 54 卖票窗口 <nsthread: 0x1c42672c0="">{number = 4, name = (null)}<br>剩余票数 53 卖票窗口 <nsthread: 0x1c42672c0="">{number = 4, name = (null)}<br>剩余票数 52 卖票窗口 <nsthread: 0x1c42672c0="">{number = 4, name = (null)}<br>……………..<br>剩余票数 2 卖票窗口 <nsthread: 0x1c42672c0="">{number = 4, name = (null)}<br>剩余票数 1 卖票窗口 <nsthread: 0x1c42672c0="">{number = 4, name = (null)}<br>票已经卖完了<br>票已经卖完了<br>票已经卖完了</nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<ul>
+<li>使用POSIX互斥锁</li>
+</ul>
+<blockquote>
+<p>POSIX互斥锁在很多程序里面很容易使用。为了新建一个互斥锁，你声明并初始化一个pthread_mutex_t的结构。为了锁住和解锁一个互斥锁，你可以使用pthread_mutex_lock和pthread_mutex_unlock函数。列表4-2显式了要初始化并使用一个POSIX线程的互斥锁的基础代码。当你用完一个锁之后，只要简单的调用pthread_mutex_destroy来释放该锁的数据结构。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div></pre></td><td class="code"><pre><div class="line">var tickets: [Int] = [Int]()</div><div class="line"></div><div class="line">@IBAction func onThread() &#123;</div><div class="line">    let que = DispatchQueue.init(label: &quot;com.jk.thread&quot;, attributes: .concurrent)</div><div class="line">    </div><div class="line">    mutex()</div><div class="line">    </div><div class="line">    //生成100张票</div><div class="line">    for i in 0..&lt;100 &#123;</div><div class="line">        tickets.append(i)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //北京卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //上海卖票窗口</div><div class="line">    que.async &#123;</div><div class="line">        self.saleTicket()</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//生成一个锁</div><div class="line">var lock = pthread_mutex_t.init()</div><div class="line"></div><div class="line">func mutex() &#123;</div><div class="line">    //设置属性</div><div class="line">    var attr: pthread_mutexattr_t = pthread_mutexattr_t()</div><div class="line">    pthread_mutexattr_init(&amp;attr)</div><div class="line">    pthread_mutexattr_settype(&amp;attr, PTHREAD_MUTEX_RECURSIVE)</div><div class="line">    let err = pthread_mutex_init(&amp;self.lock, &amp;attr)</div><div class="line">    pthread_mutexattr_destroy(&amp;attr)</div><div class="line">    </div><div class="line">    switch err &#123;</div><div class="line">    case 0:</div><div class="line">        // Success</div><div class="line">        break</div><div class="line">        </div><div class="line">    case EAGAIN:</div><div class="line">        fatalError(&quot;Could not create mutex: EAGAIN (The system temporarily lacks the resources to create another mutex.)&quot;)</div><div class="line">        </div><div class="line">    case EINVAL:</div><div class="line">        fatalError(&quot;Could not create mutex: invalid attributes&quot;)</div><div class="line">        </div><div class="line">    case ENOMEM:</div><div class="line">        fatalError(&quot;Could not create mutex: no memory&quot;)</div><div class="line">        </div><div class="line">    default:</div><div class="line">        fatalError(&quot;Could not create mutex, unspecified error \(err)&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">func saleTicket() &#123;</div><div class="line">    while true &#123;</div><div class="line">        //关门，执行任务</div><div class="line">        pthread_mutex_lock(&amp;lock)</div><div class="line">        </div><div class="line">        if tickets.count &gt; 0 &#123;</div><div class="line">            print(&quot;剩余票数&quot;, tickets.count, &quot;卖票窗口&quot;, Thread.current)</div><div class="line">            tickets.removeLast()</div><div class="line">            Thread.sleep(forTimeInterval: 0.2)</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            print(&quot;票已经卖完了&quot;)</div><div class="line">            </div><div class="line">            //开门，让其他任务可以执行</div><div class="line">            pthread_mutex_unlock(&amp;lock)</div><div class="line">            </div><div class="line">            break</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //开门，让其他任务可以执行</div><div class="line">        pthread_mutex_unlock(&amp;lock)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">deinit &#123;</div><div class="line">    pthread_mutex_destroy(&amp;lock)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>剩余票数 100 卖票窗口 <nsthread: 0x1c446f7c0="">{number = 5, name = (null)}<br>剩余票数 99 卖票窗口 <nsthread: 0x1c0472900="">{number = 6, name = (null)}<br>剩余票数 98 卖票窗口 <nsthread: 0x1c446f7c0="">{number = 5, name = (null)}<br>剩余票数 97 卖票窗口 <nsthread: 0x1c0472900="">{number = 6, name = (null)}<br>剩余票数 96 卖票窗口 <nsthread: 0x1c446f7c0="">{number = 5, name = (null)}<br>……………..<br>剩余票数 35 卖票窗口 <nsthread: 0x1c0472900="">{number = 6, name = (null)}<br>剩余票数 34 卖票窗口 <nsthread: 0x1c446f7c0="">{number = 5, name = (null)}<br>剩余票数 33 卖票窗口 <nsthread: 0x1c0472900="">{number = 6, name = (null)}<br>剩余票数 32 卖票窗口 <nsthread: 0x1c446f7c0="">{number = 5, name = (null)}<br>……………..<br>剩余票数 2 卖票窗口 <nsthread: 0x1c446f7c0="">{number = 5, name = (null)}<br>剩余票数 1 卖票窗口 <nsthread: 0x1c0472900="">{number = 6, name = (null)}<br>票已经卖完了<br>票已经卖完了</nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></nsthread:></p>
+</blockquote>
+<p>可以看到使用<code>pthread_mutex_t</code>完成了多线程同步，当然实现锁的类型有很多，比如还有<code>NSRecursiveLock</code>(递归锁)、<code>NSConditionLock</code>(条件锁)、<code>NSDistributedLock</code>(分布式锁)、<code>OSSpinLock</code>(自旋锁)等方式，就不用代码一一实现了。</p>
+<h3 id="同异步和队列"><a href="#同异步和队列" class="headerlink" title="同异步和队列"></a>同异步和队列</h3><h4 id="同异步是什么"><a href="#同异步是什么" class="headerlink" title="同异步是什么"></a>同异步是什么</h4><blockquote>
+<p>步和异步操作的主要区别在于是否等待操作执行完成，亦即是否阻塞当前线程。同步操作会等待操作执行完成后再继续执行接下来的代码，而异步操作则恰好相反，它会在调用后立即返回，不会等待操作的执行结果。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">同步</th>
+<th style="text-align:center">异步</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">是否阻塞当前线程</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">是否等待任务执行完成</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table>
+<h4 id="队列是什么"><a href="#队列是什么" class="headerlink" title="队列是什么"></a>队列是什么</h4><ul>
+<li>队列含义</li>
+</ul>
+<blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E9%98%9F%E5%88%97" target="_blank" rel="external">队列</a>，又称为伫列（queue），是先进先出（FIFO, First-In-First-Out）的线性表。在具体应用中通常用链表或者数组来实现。队列只允许在后端（称为rear）进行插入操作，在前端（称为front）进行删除操作。<br>队列的操作方式和堆栈类似，唯一的区别在于队列只允许新数据在后端进行添加。</p>
+</blockquote>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-194805ad2e7c51c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ul>
+<li>串行队列和并发队列</li>
+</ul>
+<p>串行队列一次只能执行一个任务，而并发队列则可以允许多个任务同时执行。<code>iOS</code>系统就是使用这些队列来进行任务调度的，它会根据调度任务的需要和系统当前的负载情况动态地创建和销毁线程，而不需要我们手动地管理。</p>
+<p><strong>注意这个并发多个任务同时执行的<code>同时</code>在二字指的是同一时间内(由于<code>CPU</code>执行很快，感觉几乎同时)</strong></p>
+<p>这里会有一个经常性的疑问，串行队列一次执行一个任务，任务按顺序执行，先进先出，这个好理解。<strong>那并发几个任务同时执行也是先进先出，这个怎么理解呢。因为并发执行任务，先进去的任务并不一定先执行完，但是即使后面的任务先执行完，也是要等前面的任务退出。这是由队列的性质决定的。</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">串行队列</th>
+<th style="text-align:center">并发队列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">同步执行</td>
+<td style="text-align:center">当前线程，一个接着一个地执行，顺序执行，一个任务执行完毕后，再执行下一个任务</td>
+<td style="text-align:center">当前线程，一个接着一个地执行，顺序执行，一个任务执行完毕后，再执行下一个任务</td>
+</tr>
+<tr>
+<td style="text-align:center">异步执行</td>
+<td style="text-align:center">其他线程，一个接着一个地执行</td>
+<td style="text-align:center">多个任务，多个线程，多个任务并发执行</td>
+</tr>
+</tbody>
+</table>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-6d802467e0d7e547.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-8a3924f342170ccd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><strong>注意这里说的是队列执行时间，并不是先进先出的示例。</strong></p>
+<ul>
+<li>并发队列和并行队列</li>
+</ul>
+<blockquote>
+<p>并发的来历<br>在过去单CPU时代，单任务在一个时间点只能执行单一程序。之后发展到多任务阶段，计算机能在同一时间点并行执行多任务或多进程。虽然并不是真正意义上的“同一时间点”，而是多个任务或进程共享一个CPU，并交由操作系统来完成多任务间对CPU的运行切换，以使得每个任务都有机会获得一定的时间片运行。<br>并行的来历<br>多线程比多任务更加有挑战。多线程是在同一个程序内部并行执行，因此会对相同的内存空间进行并发读写操作。这可能是在单线程程序中从来不会遇到的问题。其中的一些错误也未必会在单CPU机器上出现，因为两个线程从来不会得到真正的并行执行。然而，更现代的计算机伴随着多核CPU的出现，也就意味着<strong>不同的线程能被不同的CPU核得到真正意义的并行执行</strong>。</p>
+</blockquote>
+<p>并发的关键是你有处理多个任务的能力，不一定要同时。<br>并行的关键是你有同时处理多个任务的能力。<br><strong>并发是一种能力，处理多个任务的能力。并行是状态，多个任务同时执行的状态。</strong><br>可以看到并发和并行并不是同一类概念，所以不具有比较性，并发包含并行，就比如水果是包含西瓜一样。并发的不一定是并行，并行的一定是并发。</p>
+<blockquote>
+<p>一个CPU的<code>核心</code>同时只能处理一个线程。<br>单核CPU一个线程，当前是并行(两个以上才叫并行，为了理解，暂且这样叫吧)。单核CPU两个线程，当前是并发。双核CPU两个线程，当前是并行。双核CPU四个线程，当前是并发。</p>
+</blockquote>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-fd60408209a40942.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-057641b244b01cce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS多线程/" rel="tag"># iOS多线程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/23/iOS通过SSH远程管理macOS服务器文件/" rel="next" title="iOS通过SSH远程管理macOS服务器文件">
+                <i class="fa fa-chevron-left"></i> iOS通过SSH远程管理macOS服务器文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/23/iOS多线程详解：实践篇/" rel="prev" title="iOS多线程详解：实践篇">
+                iOS多线程详解：实践篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU"><span class="nav-number">1.</span> <span class="nav-text">CPU</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CPU是什么"><span class="nav-number">1.1.</span> <span class="nav-text">CPU是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多核CPU与多个CPU多核"><span class="nav-number">1.2.</span> <span class="nav-text">多核CPU与多个CPU多核</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程"><span class="nav-number">2.</span> <span class="nav-text">进程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#进程是什么"><span class="nav-number">2.1.</span> <span class="nav-text">进程是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#进程间通信"><span class="nav-number">2.2.</span> <span class="nav-text">进程间通信</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程"><span class="nav-number">3.</span> <span class="nav-text">线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程是什么"><span class="nav-number">3.1.</span> <span class="nav-text">线程是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超线程技术"><span class="nav-number">3.2.</span> <span class="nav-text">超线程技术</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程间通信"><span class="nav-number">3.3.</span> <span class="nav-text">线程间通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程池"><span class="nav-number">3.4.</span> <span class="nav-text">线程池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多线程同步"><span class="nav-number">3.5.</span> <span class="nav-text">多线程同步</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1、多线程同步是什么"><span class="nav-number">3.5.1.</span> <span class="nav-text">1、多线程同步是什么</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2、多线程同步用途"><span class="nav-number">3.5.2.</span> <span class="nav-text">2、多线程同步用途</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3、多线程同步实现"><span class="nav-number">3.5.3.</span> <span class="nav-text">3、多线程同步实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同异步和队列"><span class="nav-number">4.</span> <span class="nav-text">同异步和队列</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#同异步是什么"><span class="nav-number">4.1.</span> <span class="nav-text">同异步是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#队列是什么"><span class="nav-number">4.2.</span> <span class="nav-text">队列是什么</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/03/23/iOS多线程详解：概念篇/';
+          this.page.identifier = '2018/03/23/iOS多线程详解：概念篇/';
+          this.page.title = 'iOS多线程详解：概念篇';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
