@@ -143,8 +143,9 @@ font:
 #social:
   #LinkLabel: Link
 social:
-  GitHub: https://github.com/jackyshan
   简书: http://www.jianshu.com/u/a2133b6aa395
+  掘金: https://juejin.im/user/5a7c14cb6fb9a0635d0c0c4f
+  GitHub: https://github.com/jackyshan
 
 # Social Links Icons
 # Icon Mapping:
