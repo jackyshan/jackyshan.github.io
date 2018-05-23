@@ -1,0 +1,842 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="AutoreleasePool," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="AutoreleasePool（自动释放池）是OC中的一种内存自动回收机制，它可以延迟加入AutoreleasePool中的变量release的时机。在正常情况下，创建的变量会在超出其作用域的时候release，但是如果将变量加入AutoreleasePool，那么release将延迟执行。  AutoreleasePool创建和释放 App启动后，苹果在主线程 RunLoop 里注册了两个">
+<meta name="keywords" content="AutoreleasePool">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AutoreleasePool底层实现原理">
+<meta property="og:url" content="http://jackyshan.github.io/2018/05/23/AutoreleasePool底层实现原理/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="AutoreleasePool（自动释放池）是OC中的一种内存自动回收机制，它可以延迟加入AutoreleasePool中的变量release的时机。在正常情况下，创建的变量会在超出其作用域的时候release，但是如果将变量加入AutoreleasePool，那么release将延迟执行。  AutoreleasePool创建和释放 App启动后，苹果在主线程 RunLoop 里注册了两个">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-da9595ea4430a011.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/3672149-7ea8e16cedb69d1b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/526">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/3672149-25e788aede2fe5d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/3672149-8c3a6a9f0f117355.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/618">
+<meta property="og:updated_time" content="2018-05-23T13:00:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AutoreleasePool底层实现原理">
+<meta name="twitter:description" content="AutoreleasePool（自动释放池）是OC中的一种内存自动回收机制，它可以延迟加入AutoreleasePool中的变量release的时机。在正常情况下，创建的变量会在超出其作用域的时候release，但是如果将变量加入AutoreleasePool，那么release将延迟执行。  AutoreleasePool创建和释放 App启动后，苹果在主线程 RunLoop 里注册了两个">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/301129-da9595ea4430a011.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/05/23/AutoreleasePool底层实现原理/"/>
+
+
+
+
+
+  <title>AutoreleasePool底层实现原理 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/05/23/AutoreleasePool底层实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">AutoreleasePool底层实现原理</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-23T20:59:52+08:00">
+                2018-05-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/23/AutoreleasePool底层实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/05/23/AutoreleasePool底层实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/301129-da9595ea4430a011.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<blockquote>
+<p>AutoreleasePool（自动释放池）是OC中的一种内存自动回收机制，它可以延迟加入AutoreleasePool中的变量release的时机。在正常情况下，创建的变量会在超出其作用域的时候release，但是如果将变量加入AutoreleasePool，那么release将延迟执行。</p>
+</blockquote>
+<h3 id="AutoreleasePool创建和释放"><a href="#AutoreleasePool创建和释放" class="headerlink" title="AutoreleasePool创建和释放"></a>AutoreleasePool创建和释放</h3><ul>
+<li>App启动后，苹果在主线程 RunLoop 里注册了两个 Observer，其回调都是 _wrapRunLoopWithAutoreleasePoolHandler()。</li>
+<li>第一个 Observer 监视的事件是 Entry(即将进入Loop)，其回调内会调用 _objc_autoreleasePoolPush() 创建自动释放池。其 order 是-2147483647，优先级最高，保证创建释放池发生在其他所有回调之前。</li>
+<li>第二个 Observer 监视了两个事件： BeforeWaiting(准备进入休眠) 时调用_objc_autoreleasePoolPop() 和 _objc_autoreleasePoolPush() 释放旧的池并创建新池；Exit(即将退出Loop) 时调用 _objc_autoreleasePoolPop() 来释放自动释放池。这个 Observer 的 order 是 2147483647，优先级最低，保证其释放池子发生在其他所有回调之后。</li>
+<li>在主线程执行的代码，通常是写在诸如事件回调、Timer回调内的。这些回调会被 RunLoop 创建好的 AutoreleasePool 环绕着，所以不会出现内存泄漏，开发者也不必显示创建 Pool 了。</li>
+</ul>
+<p>也就是说AutoreleasePool创建是在一个RunLoop事件开始之前(push)，AutoreleasePool释放是在一个RunLoop事件即将结束之前(pop)。<br>AutoreleasePool里的Autorelease对象的加入是在RunLoop事件中，AutoreleasePool里的Autorelease对象的释放是在AutoreleasePool释放时。</p>
+<h3 id="AutoreleasePool实现原理"><a href="#AutoreleasePool实现原理" class="headerlink" title="AutoreleasePool实现原理"></a>AutoreleasePool实现原理</h3><p>在终端中使用clang -rewrite-objc命令将下面的OC代码重写成C++的实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">#import &lt;Foundation/Foundation.h&gt;</div><div class="line"></div><div class="line">int main(int argc, const char * argv[]) &#123;</div><div class="line">    </div><div class="line">    @autoreleasepool &#123;</div><div class="line">        NSLog(@&quot;Hello, World!&quot;);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在cpp文件代码中我们找到main函数代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">int main(int argc, const char * argv[]) &#123;</div><div class="line"></div><div class="line">    /* @autoreleasepool */ &#123; __AtAutoreleasePool __autoreleasepool; </div><div class="line">        NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_kb_06b822gn59df4d1zt99361xw0000gn_T_main_d39a79_mi_0);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到苹果通过声明一个<strong>AtAutoreleasePool类型的局部变量</strong>autoreleasepool实现了@autoreleasepool{}。<br><code>__AtAutoreleasePool</code>的定义如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">extern &quot;C&quot; __declspec(dllimport) void * objc_autoreleasePoolPush(void);</div><div class="line">extern &quot;C&quot; __declspec(dllimport) void objc_autoreleasePoolPop(void *);</div><div class="line"></div><div class="line">struct __AtAutoreleasePool &#123;</div><div class="line">  __AtAutoreleasePool() &#123;atautoreleasepoolobj = objc_autoreleasePoolPush();&#125;</div><div class="line">  ~__AtAutoreleasePool() &#123;objc_autoreleasePoolPop(atautoreleasepoolobj);&#125;</div><div class="line">  void * atautoreleasepoolobj;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>根据构造函数和析构函数的特点（自动局部变量的构造函数是在程序执行到声明这个对象的位置时调用的，而对应的析构函数是在程序执行到离开这个对象的作用域时调用），我们可以将上面两段代码简化成如下形式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">int main(int argc, const char * argv[]) &#123;</div><div class="line"></div><div class="line">    /* @autoreleasepool */ &#123;</div><div class="line">        void *atautoreleasepoolobj = objc_autoreleasePoolPush();</div><div class="line">        NSLog((NSString *)&amp;__NSConstantStringImpl__var_folders_kb_06b822gn59df4d1zt99361xw0000gn_T_main_d39a79_mi_0);</div><div class="line">        objc_autoreleasePoolPop(atautoreleasepoolobj);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>至此，我们可以分析出，单个自动释放池的执行过程就是<code>objc_autoreleasePoolPush()</code> —&gt; <code>[object autorelease]</code> —&gt; <code>objc_autoreleasePoolPop(void *)</code>。</p>
+<p>来看一下objc_autoreleasePoolPush 和 objc_autoreleasePoolPop 的实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">void *objc_autoreleasePoolPush(void) &#123;</div><div class="line">    return AutoreleasePoolPage::push();</div><div class="line">&#125;</div><div class="line"></div><div class="line">void objc_autoreleasePoolPop(void *ctxt) &#123;</div><div class="line">    AutoreleasePoolPage::pop(ctxt);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的方法看上去是对 AutoreleasePoolPage 对应静态方法 push 和 pop 的封装。<br>下面分析一下AutoreleasePoolPage的实现，揭开AutoreleasePool的实现原理。</p>
+<h3 id="AutoreleasePoolPage实现"><a href="#AutoreleasePoolPage实现" class="headerlink" title="AutoreleasePoolPage实现"></a>AutoreleasePoolPage实现</h3><h4 id="AutoreleasePoolPage介绍"><a href="#AutoreleasePoolPage介绍" class="headerlink" title="AutoreleasePoolPage介绍"></a>AutoreleasePoolPage介绍</h4><p>AutoreleasePoolPage 是一个 C++ 中的类，它在 NSObject.mm 中的定义是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">class AutoreleasePoolPage &#123;</div><div class="line">#   define EMPTY_POOL_PLACEHOLDER ((id*)1)</div><div class="line"></div><div class="line">#   define POOL_BOUNDARY nil</div><div class="line">    static pthread_key_t const key = AUTORELEASE_POOL_KEY;</div><div class="line">    static uint8_t const SCRIBBLE = 0xA3;  // 0xA3A3A3A3 after releasing</div><div class="line">    static size_t const SIZE = </div><div class="line">#if PROTECT_AUTORELEASEPOOL</div><div class="line">        PAGE_MAX_SIZE;  // must be multiple of vm page size</div><div class="line">#else</div><div class="line">        PAGE_MAX_SIZE;  // size and alignment, power of 2</div><div class="line">#endif</div><div class="line">    static size_t const COUNT = SIZE / sizeof(id);</div><div class="line"></div><div class="line">    magic_t const magic;</div><div class="line">    id *next;</div><div class="line">    pthread_t const thread;</div><div class="line">    AutoreleasePoolPage * const parent;</div><div class="line">    AutoreleasePoolPage *child;</div><div class="line">    uint32_t const depth;</div><div class="line">    uint32_t hiwat;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<ul>
+<li>magic 检查校验完整性的变量</li>
+<li>next 指向新加入的autorelease对象</li>
+<li>thread page当前所在的线程，AutoreleasePool是按线程一一对应的（结构中的thread指针指向当前线程）</li>
+<li>parent 父节点 指向前一个page</li>
+<li>child 子节点 指向下一个page</li>
+<li>depth 链表的深度，节点个数</li>
+<li>hiwat high water mark 数据容纳的一个上限</li>
+<li>EMPTY_POOL_PLACEHOLDER 空池占位</li>
+<li>POOL_BOUNDARY 是一个边界对象 nil,之前的源代码变量名是 POOL_SENTINEL哨兵对象,用来区别每个page即每个 AutoreleasePoolPage 边界</li>
+<li>PAGE_MAX_SIZE = 4096, 为什么是4096呢？其实就是虚拟内存每个扇区4096个字节,<a href="https://zh.wikipedia.org/zh-hans/4K%E5%AF%B9%E9%BD%90" target="_blank" rel="external">4K对齐</a>的说法。</li>
+<li>COUNT 一个page里对象数</li>
+</ul>
+<h4 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h4><p>AutoreleasePool并没有单独的结构，而是由若干个AutoreleasePoolPage以双向链表的形式组合而成的栈结构（分别对应结构中的parent指针和child指针）</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3672149-7ea8e16cedb69d1b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/526" alt=""></p>
+<p>parent和child就是用来构造双向链表的指针。parent指向前一个page, child指向下一个page。<br>一个AutoreleasePoolPage的空间被占满时，会新建一个AutoreleasePoolPage对象，连接链表，后来的autorelease对象在新的page加入。</p>
+<h4 id="objc-autoreleasePoolPush"><a href="#objc-autoreleasePoolPush" class="headerlink" title="objc_autoreleasePoolPush"></a>objc_autoreleasePoolPush</h4><p><img src="https://upload-images.jianshu.io/upload_images/3672149-25e788aede2fe5d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt=""></p>
+<p>每当自动释放池调用objc_autoreleasePoolPush时都会把边界对象放进栈顶,然后返回边界对象,用于释放。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">atautoreleasepoolobj = objc_autoreleasePoolPush();</div></pre></td></tr></table></figure>
+<p>atautoreleasepoolobj就是返回的边界对象(POOL_BOUNDARY)</p>
+<p>push实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">void *objc_autoreleasePoolPush(void) &#123;</div><div class="line">    return AutoreleasePoolPage::push();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>它调用AutoreleasePoolPage的类方法push：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">static inline void *push() &#123;</div><div class="line">   return autoreleaseFast(POOL_BOUNDARY);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在这里会进入一个比较关键的方法autoreleaseFast，并传入边界对象(POOL_BOUNDARY)：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">static inline id *autoreleaseFast(id obj)</div><div class="line">&#123;</div><div class="line">   AutoreleasePoolPage *page = hotPage();</div><div class="line">   if (page &amp;&amp; !page-&gt;full()) &#123;</div><div class="line">       return page-&gt;add(obj);</div><div class="line">   &#125; else if (page) &#123;</div><div class="line">       return autoreleaseFullPage(obj, page);</div><div class="line">   &#125; else &#123;</div><div class="line">       return autoreleaseNoPage(obj);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述方法分三种情况选择不同的代码执行：</p>
+<ul>
+<li>有 hotPage 并且当前 page 不满，调用 page-&gt;add(obj) 方法将对象添加至 AutoreleasePoolPage 的栈中</li>
+<li>有 hotPage 并且当前 page 已满，调用 autoreleaseFullPage 初始化一个新的页，调用 page-&gt;add(obj) 方法将对象添加至 AutoreleasePoolPage 的栈中</li>
+<li>无 hotPage，调用 autoreleaseNoPage 创建一个 hotPage，调用 page-&gt;add(obj) 方法将对象添加至 AutoreleasePoolPage 的栈中</li>
+</ul>
+<p>最后的都会调用 page-&gt;add(obj) 将对象添加到自动释放池中。<br>hotPage 可以理解为当前正在使用的 AutoreleasePoolPage。</p>
+<h4 id="AutoreleasePoolPage-autorelease-id-obj"><a href="#AutoreleasePoolPage-autorelease-id-obj" class="headerlink" title="AutoreleasePoolPage::autorelease(id obj)"></a>AutoreleasePoolPage::autorelease(id obj)</h4><p>autorelease方法的实现，先来看一下方法的调用栈：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">- [NSObject autorelease]</div><div class="line">└── id objc_object::rootAutorelease()</div><div class="line">    └── id objc_object::rootAutorelease2()</div><div class="line">        └── static id AutoreleasePoolPage::autorelease(id obj)</div><div class="line">            └── static id AutoreleasePoolPage::autoreleaseFast(id obj)</div><div class="line">                ├── id *add(id obj)</div><div class="line">                ├── static id *autoreleaseFullPage(id obj, AutoreleasePoolPage *page)</div><div class="line">                │   ├── AutoreleasePoolPage(AutoreleasePoolPage *newParent)</div><div class="line">                │   └── id *add(id obj)</div><div class="line">                └── static id *autoreleaseNoPage(id obj)</div><div class="line">                    ├── AutoreleasePoolPage(AutoreleasePoolPage *newParent)</div><div class="line">                    └── id *add(id obj)</div></pre></td></tr></table></figure>
+<p>在autorelease方法的调用栈中，最终都会调用上面提到的 autoreleaseFast方法，将当前对象加到AutoreleasePoolPage 中。</p>
+<p>这一小节中这些方法的实现都非常容易，只是进行了一些参数上的检查，最终还要调用autoreleaseFast方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">inline id objc_object::rootAutorelease() &#123;</div><div class="line">    if (isTaggedPointer()) return (id)this;</div><div class="line">    if (prepareOptimizedReturn(ReturnAtPlus1)) return (id)this;</div><div class="line"></div><div class="line">    return rootAutorelease2();</div><div class="line">&#125;</div><div class="line"></div><div class="line">__attribute__((noinline,used)) id objc_object::rootAutorelease2() &#123;</div><div class="line">    return AutoreleasePoolPage::autorelease((id)this);</div><div class="line">&#125;</div><div class="line"></div><div class="line">static inline id autorelease(id obj) &#123;</div><div class="line">   id *dest __unused = autoreleaseFast(obj);</div><div class="line">   return obj;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>autorelease函数和push函数一样，关键代码都是调用autoreleaseFast函数向自动释放池的链表栈中添加一个对象，<br>不过push函数的入栈的是一个边界对象，而autorelease函数入栈的是需要加入autoreleasepool的对象。</p>
+<h4 id="objc-autoreleasePoolPop"><a href="#objc-autoreleasePoolPop" class="headerlink" title="objc_autoreleasePoolPop"></a>objc_autoreleasePoolPop</h4><p><img src="https://upload-images.jianshu.io/upload_images/3672149-8c3a6a9f0f117355.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/618" alt=""></p>
+<p>自动释放池释放是传入 push 返回的边界对象,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">objc_autoreleasePoolPop(atautoreleasepoolobj);</div></pre></td></tr></table></figure>
+<p>然后将边界对象指向的这一页 AutoreleasePoolPage 内的对象释放<br>atautoreleasepoolobj就是返回的边界对象(POOL_BOUNDARY)</p>
+<p>AutoreleasePoolPage::pop()实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">static inline void pop(void *token)   // token指针指向栈顶的地址</div><div class="line">&#123;</div><div class="line">    AutoreleasePoolPage *page;</div><div class="line">    id *stop;</div><div class="line"></div><div class="line">    page = pageForPointer(token);   // 通过栈顶的地址找到对应的page</div><div class="line">    stop = (id *)token;</div><div class="line">    if (DebugPoolAllocation  &amp;&amp;  *stop != POOL_SENTINEL) &#123;</div><div class="line">        // This check is not valid with DebugPoolAllocation off</div><div class="line">        // after an autorelease with a pool page but no pool in place.</div><div class="line">        _objc_fatal(&quot;invalid or prematurely-freed autorelease pool %p; &quot;, </div><div class="line">                    token);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (PrintPoolHiwat) printHiwat();   // 记录最高水位标记</div><div class="line"></div><div class="line">    page-&gt;releaseUntil(stop);   // 从栈顶开始操作出栈，并向栈中的对象发送release消息，直到遇到第一个哨兵对象</div><div class="line"></div><div class="line">    // memory: delete empty children</div><div class="line">    // 删除空掉的节点</div><div class="line">    if (DebugPoolAllocation  &amp;&amp;  page-&gt;empty()) &#123;</div><div class="line">        // special case: delete everything during page-per-pool debugging</div><div class="line">        AutoreleasePoolPage *parent = page-&gt;parent;</div><div class="line">        page-&gt;kill();</div><div class="line">        setHotPage(parent);</div><div class="line">    &#125; else if (DebugMissingPools  &amp;&amp;  page-&gt;empty()  &amp;&amp;  !page-&gt;parent) &#123;</div><div class="line">        // special case: delete everything for pop(top) </div><div class="line">        // when debugging missing autorelease pools</div><div class="line">        page-&gt;kill();</div><div class="line">        setHotPage(nil);</div><div class="line">    &#125; </div><div class="line">    else if (page-&gt;child) &#123;</div><div class="line">        // hysteresis: keep one empty child if page is more than half full</div><div class="line">        if (page-&gt;lessThanHalfFull()) &#123;</div><div class="line">            page-&gt;child-&gt;kill();</div><div class="line">        &#125;</div><div class="line">        else if (page-&gt;child-&gt;child) &#123;</div><div class="line">            page-&gt;child-&gt;child-&gt;kill();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该过程主要分为两步：</p>
+<ul>
+<li>page-&gt;releaseUntil(stop)，对栈顶（page-&gt;next）到stop地址（POOL_SENTINEL）之间的所有对象调用objc_release()，进行引用计数减1</li>
+<li>清空page对象page-&gt;kill()，有两句注释</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// hysteresis: keep one empty child if this page is more than half full</div><div class="line"></div><div class="line">// special case: delete everything for pop(0)</div><div class="line">除非是pop(0)方式调用，这样会清理掉所有page对象；</div><div class="line">否则，在当前page存放的对象大于一半时，会保留一个空的子page，</div><div class="line">这样估计是为了可能马上需要新建page节省创建page的开销。</div></pre></td></tr></table></figure>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><ul>
+<li>自动释放池是一个个 AutoreleasePoolPage 组成的一个page是4096字节大小,每个 AutoreleasePoolPage 以双向链表连接起来形成一个自动释放池</li>
+<li>当对象调用 autorelease 方法时，会将对象加入 AutoreleasePoolPage 的栈中</li>
+<li>pop 时是传入边界对象,然后对page 中的对象发送release 的消息</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/AutoreleasePool/" rel="tag"># AutoreleasePool</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/23/NSDictionary底层实现原理/" rel="next" title="NSDictionary底层实现原理">
+                <i class="fa fa-chevron-left"></i> NSDictionary底层实现原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a7c14cb6fb9a0635d0c0c4f/posts" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AutoreleasePool创建和释放"><span class="nav-number">1.</span> <span class="nav-text">AutoreleasePool创建和释放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AutoreleasePool实现原理"><span class="nav-number">2.</span> <span class="nav-text">AutoreleasePool实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AutoreleasePoolPage实现"><span class="nav-number">3.</span> <span class="nav-text">AutoreleasePoolPage实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AutoreleasePoolPage介绍"><span class="nav-number">3.1.</span> <span class="nav-text">AutoreleasePoolPage介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#双向链表"><span class="nav-number">3.2.</span> <span class="nav-text">双向链表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#objc-autoreleasePoolPush"><span class="nav-number">3.3.</span> <span class="nav-text">objc_autoreleasePoolPush</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AutoreleasePoolPage-autorelease-id-obj"><span class="nav-number">3.4.</span> <span class="nav-text">AutoreleasePoolPage::autorelease(id obj)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#objc-autoreleasePoolPop"><span class="nav-number">3.5.</span> <span class="nav-text">objc_autoreleasePoolPop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">3.6.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/05/23/AutoreleasePool底层实现原理/';
+          this.page.identifier = '2018/05/23/AutoreleasePool底层实现原理/';
+          this.page.title = 'AutoreleasePool底层实现原理';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

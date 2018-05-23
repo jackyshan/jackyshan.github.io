@@ -1,0 +1,809 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="NSDictionary介绍 NSDictionary（字典）是使用 hash表来实现key和value之间的映射和存储的， hash函数设计的好坏影响着数据的查找访问效率。数据在hash表中分布的越均匀，其访问效率越高。而在Objective-C中，通常都是利用NSString 来作为键值，其内部使用的hash函数也是通过使用 NSString对象作为键值来保证数据的各个节点在hash表中均匀">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSDictionary底层实现原理">
+<meta property="og:url" content="http://jackyshan.github.io/2018/05/23/NSDictionary底层实现原理/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="NSDictionary介绍 NSDictionary（字典）是使用 hash表来实现key和value之间的映射和存储的， hash函数设计的好坏影响着数据的查找访问效率。数据在hash表中分布的越均匀，其访问效率越高。而在Objective-C中，通常都是利用NSString 来作为键值，其内部使用的hash函数也是通过使用 NSString对象作为键值来保证数据的各个节点在hash表中均匀">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-ff337872b5a8a2f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-05-23T12:59:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSDictionary底层实现原理">
+<meta name="twitter:description" content="NSDictionary介绍 NSDictionary（字典）是使用 hash表来实现key和value之间的映射和存储的， hash函数设计的好坏影响着数据的查找访问效率。数据在hash表中分布的越均匀，其访问效率越高。而在Objective-C中，通常都是利用NSString 来作为键值，其内部使用的hash函数也是通过使用 NSString对象作为键值来保证数据的各个节点在hash表中均匀">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/301129-ff337872b5a8a2f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/05/23/NSDictionary底层实现原理/"/>
+
+
+
+
+
+  <title>NSDictionary底层实现原理 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/05/23/NSDictionary底层实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">NSDictionary底层实现原理</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-23T20:57:08+08:00">
+                2018-05-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/23/NSDictionary底层实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/05/23/NSDictionary底层实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/301129-ff337872b5a8a2f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="NSDictionary介绍"><a href="#NSDictionary介绍" class="headerlink" title="NSDictionary介绍"></a>NSDictionary介绍</h3><blockquote>
+<p>NSDictionary（字典）是使用 hash表来实现key和value之间的映射和存储的， hash函数设计的好坏影响着数据的查找访问效率。数据在hash表中分布的越均匀，其访问效率越高。而在Objective-C中，通常都是利用NSString 来作为键值，其内部使用的hash函数也是通过使用 NSString对象作为键值来保证数据的各个节点在hash表中均匀分布。</p>
+</blockquote>
+<h3 id="NSDictionary内部结构"><a href="#NSDictionary内部结构" class="headerlink" title="NSDictionary内部结构"></a>NSDictionary内部结构</h3><p>NSDictionary使用NSMapTable实现，NSMapTable同样是一个key－value的容器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">typedef struct &#123;</div><div class="line">   NSMapTable        *table;</div><div class="line">   NSInteger          i;</div><div class="line">   struct _NSMapNode *j;</div><div class="line">&#125; NSMapEnumerator;</div></pre></td></tr></table></figure>
+<p>上述结构体描述了遍历一个NSMapTable时的一个指针对象，其中包含table对象自身的指针，计数值，和节点指针。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">typedef struct &#123;</div><div class="line">   NSUInteger (*hash)(NSMapTable *table,const void *);</div><div class="line">   BOOL (*isEqual)(NSMapTable *table,const void *,const void *);</div><div class="line">   void (*retain)(NSMapTable *table,const void *);</div><div class="line">   void (*release)(NSMapTable *table,void *);</div><div class="line">   NSString  *(*describe)(NSMapTable *table,const void *);</div><div class="line">   const void *notAKeyMarker;</div><div class="line">&#125; NSMapTableKeyCallBacks;</div></pre></td></tr></table></figure>
+<p>上述结构体中存放的是几个函数指针，用于计算key的hash值，判断key是否相等，retain，release操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">typedef struct &#123;</div><div class="line">   void       (*retain)(NSMapTable *table,const void *);</div><div class="line">   void       (*release)(NSMapTable *table,void *);</div><div class="line">   NSString  *(*describe)(NSMapTable *table, const void *);</div><div class="line">&#125; NSMapTableValueCallBacks;</div></pre></td></tr></table></figure>
+<p>上述存放的三个函数指针，定义在对NSMapTable插入一对key－value时，对value对象的操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">@interface NSMapTable : NSObject &#123;</div><div class="line">   NSMapTableKeyCallBacks   *keyCallBacks;</div><div class="line">   NSMapTableValueCallBacks *valueCallBacks;</div><div class="line">   NSUInteger             count;</div><div class="line">   NSUInteger             nBuckets;</div><div class="line">   struct _NSMapNode  **buckets;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看出来NSMapTable是一个哈希＋链表的数据结构，因此在NSMapTable中插入或者删除一对对象时，<br>寻找的时间是O（1）＋O（m），m最坏时可能为n。</p>
+<ul>
+<li>O（1）：为对key进行hash得到bucket的位置</li>
+<li>O（m）：遍历该bucket后面冲突的value，通过链表连接起来。</li>
+</ul>
+<p>因此NSDictionary中的Key-Value遍历时是无序的，至如按照什么样的顺序，跟hash函数相关。NSMapTable使用NSObject的哈希函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">- (NSUInteger)hash &#123;</div><div class="line">   return (NSUInteger)self&gt;&gt;4;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述是NSObject的哈希值的计算方式，简单通过移位实现。右移4位，左边补0。因为对象大多存于堆中，地址相差4位应该很正常。</p>
+<h3 id="NSDictionary使用"><a href="#NSDictionary使用" class="headerlink" title="NSDictionary使用"></a>NSDictionary使用</h3><h4 id="NSDictionary的Key值"><a href="#NSDictionary的Key值" class="headerlink" title="NSDictionary的Key值"></a>NSDictionary的Key值</h4><p>NSDictionary中最常用的一个方法原型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- (void)setObject:(id)anObject forKey:(id &lt;NSCopying&gt;)aKey;</div></pre></td></tr></table></figure>
+<p>从这个方法中可以知道，要作为Key值，必须遵循NSCopying协议。也就是说在NSDictionary内部，会对aKey对象Copy一份新的。而anObject 对象在其内部是作为强引用（retain或strong)。所以在MRC下，向该方法发送消息之后，我们会向anObject发送release消息进行释放。</p>
+<p>既然知道了作为key值，必须遵循NSCopying协议，说明除了NSString对象之外，我们还可以使用其他类型对象来作为NSDictionary的 key值。不过这还不够，作为key值，该类型还必须继承于NSObject并且要重载一下两个方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">- (NSUInteger)hash;  </div><div class="line">- (BOOL)isEqual:(id)object;</div></pre></td></tr></table></figure>
+<p>其中，hash 方法是用来计算该对象的 hash 值，最终的 hash 值决定了该对象在 hash 表中存储的位置。所以同样，如果想重写该方法，我们尽量设计一个能让数据分布均匀的 hash 函数。</p>
+<p><strong>所以如果对象key的hash值相同，那在hash表里面的对应的value值是相同的</strong>(value值被更新了)</p>
+<p>isEqual方法是为了通过hash值来找到对象在hash表中的位置。</p>
+<p>KeyObject.h文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">//  KeyObject.h</div><div class="line">//  testD</div><div class="line">//</div><div class="line">//  Created by jackyshan on 2018/5/22.</div><div class="line">//  Copyright © 2018年 GCI. All rights reserved.</div><div class="line">//</div><div class="line"></div><div class="line">#import &lt;Foundation/Foundation.h&gt;</div><div class="line"></div><div class="line">@interface KeyObject : NSObject&lt;NSCopying&gt;//实现Copying协议</div><div class="line"></div><div class="line">- (instancetype)initWithHashI:(NSUInteger)i;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>KeyObject.m文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">//  KeyObject.m</div><div class="line">//  testD</div><div class="line">//</div><div class="line">//  Created by jackyshan on 2018/5/22.</div><div class="line">//  Copyright © 2018年 GCI. All rights reserved.</div><div class="line">//</div><div class="line"></div><div class="line">#import &quot;KeyObject.h&quot;</div><div class="line"></div><div class="line">@interface KeyObject() &#123;</div><div class="line">    NSUInteger _hashValue;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div><div class="line"></div><div class="line">@implementation KeyObject</div><div class="line"></div><div class="line">- (instancetype)initWithHashI:(NSUInteger)i &#123;</div><div class="line">    if (self = [super init]) &#123;</div><div class="line">        _hashValue = i;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">#pragma mark - overload method</div><div class="line"></div><div class="line">- (BOOL)isEqual:(id)object &#123;</div><div class="line">    //根据hash值判断是否是同一个键值</div><div class="line">    return ([self hashKeyValue] == [(typeof(self))object hashKeyValue]);</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (NSUInteger)hash &#123;</div><div class="line">    //返回hash值</div><div class="line">    return [self hashKeyValue];</div><div class="line">&#125;</div><div class="line"></div><div class="line">#pragma mark - NSCopying</div><div class="line">- (id)copyWithZone:(NSZone *)zone &#123;</div><div class="line">    KeyObject *obj = [KeyObject allocWithZone:zone];</div><div class="line">    obj-&gt;_hashValue = _hashValue;</div><div class="line">    return obj;</div><div class="line">&#125;</div><div class="line"></div><div class="line">#pragma mark - private method</div><div class="line"></div><div class="line">- (NSUInteger)hashKeyValue &#123;</div><div class="line">    return _hashValue % 3;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">//  main.m</div><div class="line">//  testD</div><div class="line">//</div><div class="line">//  Created by jackyshan on 2018/5/22.</div><div class="line">//  Copyright © 2018年 GCI. All rights reserved.</div><div class="line">//</div><div class="line"></div><div class="line">#import &lt;Foundation/Foundation.h&gt;</div><div class="line">#import &quot;KeyObject.h&quot;</div><div class="line"></div><div class="line">int main(int argc, const char * argv[]) &#123;</div><div class="line">    @autoreleasepool &#123;</div><div class="line">        // insert code here...</div><div class="line">        </div><div class="line">        NSMutableDictionary *dic = [NSMutableDictionary dictionary];</div><div class="line">        </div><div class="line">        KeyObject *key1 = [[KeyObject alloc] initWithHashI:1];</div><div class="line">        [dic setObject:@&quot;key1value&quot; forKey:key1];</div><div class="line">        </div><div class="line">        KeyObject *key2 = [[KeyObject alloc] initWithHashI:4];</div><div class="line">        [dic setObject:@&quot;key2value&quot; forKey:key2];</div><div class="line">        </div><div class="line">        KeyObject *key3 = [[KeyObject alloc] initWithHashI:8];</div><div class="line">        [dic setObject:@&quot;key3value&quot; forKey:key3];</div><div class="line">        </div><div class="line">        NSLog(@&quot;key1---&gt;%@&quot;, [dic objectForKey:key1]);</div><div class="line">        NSLog(@&quot;key1---&gt;%@&quot;, [dic objectForKey:key2]);</div><div class="line">        NSLog(@&quot;key1---&gt;%@&quot;, [dic objectForKey:key3]);</div><div class="line">        </div><div class="line">        NSLog(@&quot;allKeys---&gt;%@&quot;, [dic allKeys]);</div><div class="line">        NSLog(@&quot;allValues---&gt;%@&quot;, [dic allValues]);</div><div class="line">    &#125;</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>打印结果：<br>2018-05-22 15:40:06.429379+0800 testD[6350:1441941] key1—&gt;key2value<br>2018-05-22 15:40:06.454114+0800 testD[6350:1441941] key1—&gt;key2value<br>2018-05-22 15:40:06.454137+0800 testD[6350:1441941] key1—&gt;key3value<br>2018-05-22 15:40:06.454634+0800 testD[6350:1441941] allKeys—&gt;(<br>    “<keyobject: 0x100403440="">“,<br>    “<keyobject: 0x100406b10="">“<br>)<br>2018-05-22 15:40:06.454779+0800 testD[6350:1441941] allValues—&gt;(<br>    key2value,<br>    key3value<br>)<br>Program ended with exit code: 0</keyobject:></keyobject:></p>
+</blockquote>
+<p>从打印结果来看，key1和key2对象的hash值是一样的，所以他们value是相等的，key1的value被key2更新了。</p>
+<h4 id="NSDictionary的KVC实现"><a href="#NSDictionary的KVC实现" class="headerlink" title="NSDictionary的KVC实现"></a>NSDictionary的KVC实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">@implementation NSDictionary (NSKeyValueCoding)</div><div class="line">- (id)valueForKey:(NSString*)key &#123;</div><div class="line">    if([key hasPrefix:@&quot;@&quot;])</div><div class="line">        return [super valueForKey:[key substringFromIndex:1]];</div><div class="line">    return [self objectForKey:key];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)setValue:(id)value forKey:(NSString*)key &#123;</div><div class="line">    [NSException raise:NSInvalidArgumentException format:@&quot;%@ called on immutable dictionary %@&quot;, NSStringFromSelector(_cmd), self];</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div><div class="line"></div><div class="line"></div><div class="line">@implementation NSMutableDictionary (NSKeyValueCoding)</div><div class="line"></div><div class="line">- (void)setValue:(id)value forKey:(NSString*)key &#123;</div><div class="line">    if(value)</div><div class="line">        [self setObject:value forKey:key];</div><div class="line">    else</div><div class="line">        [self removeObjectForKey:key];</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<ul>
+<li>setValue和setObject的区别</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">- (void)setObject:(ObjectType)anObject forKey:(KeyType &lt;NSCopying&gt;)aKey;</div><div class="line">- (void)setValue:(nullable ObjectType)value forKey:(NSString *)key;</div></pre></td></tr></table></figure>
+<p><code>setObject: ForKey</code>:是NSMutableDictionary特有的；<code>setValue: ForKey:</code>是KVC的主要方法。</p>
+<blockquote>
+<p>(1) setValue: ForKey:的value是可以为nil的（但是当value为nil的时候，会自动调用removeObject：forKey方法）；<br>setObject: ForKey:的value则不可以为nil。<br>(2) setValue: ForKey:的key必须是不为nil的字符串类型；<br>setObject: ForKey:的key可以是不为nil的所有继承NSCopying的类型。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/11/HTTP和HTTPS详解/" rel="next" title="HTTP和HTTPS详解">
+                <i class="fa fa-chevron-left"></i> HTTP和HTTPS详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/23/AutoreleasePool底层实现原理/" rel="prev" title="AutoreleasePool底层实现原理">
+                AutoreleasePool底层实现原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a7c14cb6fb9a0635d0c0c4f/posts" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#NSDictionary介绍"><span class="nav-number">1.</span> <span class="nav-text">NSDictionary介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSDictionary内部结构"><span class="nav-number">2.</span> <span class="nav-text">NSDictionary内部结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSDictionary使用"><span class="nav-number">3.</span> <span class="nav-text">NSDictionary使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#NSDictionary的Key值"><span class="nav-number">3.1.</span> <span class="nav-text">NSDictionary的Key值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NSDictionary的KVC实现"><span class="nav-number">3.2.</span> <span class="nav-text">NSDictionary的KVC实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/05/23/NSDictionary底层实现原理/';
+          this.page.identifier = '2018/05/23/NSDictionary底层实现原理/';
+          this.page.title = 'NSDictionary底层实现原理';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
