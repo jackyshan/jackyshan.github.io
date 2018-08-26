@@ -1,0 +1,910 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="算法," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="排序算法基础排序算法，是一种能将一串数据按照特定的排序方式进行排列的一种算法，一个排序算法的好坏，主要从时间复杂度，空间复杂度，稳定性来衡量。 时间复杂度时间复杂度是一个函数，它描述了该算法的运行时间，考察的是当输入值大小趋近无穷时的情况。数学和计算机科学中使用这个大 O 符号用来标记不同”阶“的无穷大。这里的无穷被认为是一个超越边界而增加的概念，而不是一个数。 想了解时间复杂度，我想讲讲常见的">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift实现常用排序算法总结">
+<meta property="og:url" content="http://jackyshan.github.io/2018/08/26/Swift实现常用排序算法总结/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="排序算法基础排序算法，是一种能将一串数据按照特定的排序方式进行排列的一种算法，一个排序算法的好坏，主要从时间复杂度，空间复杂度，稳定性来衡量。 时间复杂度时间复杂度是一个函数，它描述了该算法的运行时间，考察的是当输入值大小趋近无穷时的情况。数学和计算机科学中使用这个大 O 符号用来标记不同”阶“的无穷大。这里的无穷被认为是一个超越边界而增加的概念，而不是一个数。 想了解时间复杂度，我想讲讲常见的">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-dba6aa55060bbe7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-c585d6fb81faccfe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-dc7bad40415a92c1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-08728d5fbdc8740b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-1fd89fb5c3893711.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-34aedcee76466a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-6662537e8fe78259.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-68a678a2dcf9bd2e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-cd3722346729ab31.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-e69f8b94a4d9f703.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-1ad09cc379d33ef3.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-67fcfa0ffc86e40a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-49d565ecb17b327c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-e5687ec5853de1c1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-b32022f3e43e6784.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-a7d64f801fc64948.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-08-26T11:59:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swift实现常用排序算法总结">
+<meta name="twitter:description" content="排序算法基础排序算法，是一种能将一串数据按照特定的排序方式进行排列的一种算法，一个排序算法的好坏，主要从时间复杂度，空间复杂度，稳定性来衡量。 时间复杂度时间复杂度是一个函数，它描述了该算法的运行时间，考察的是当输入值大小趋近无穷时的情况。数学和计算机科学中使用这个大 O 符号用来标记不同”阶“的无穷大。这里的无穷被认为是一个超越边界而增加的概念，而不是一个数。 想了解时间复杂度，我想讲讲常见的">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/301129-dba6aa55060bbe7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/08/26/Swift实现常用排序算法总结/"/>
+
+
+
+
+
+  <title>Swift实现常用排序算法总结 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/08/26/Swift实现常用排序算法总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Swift实现常用排序算法总结</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-26T19:58:46+08:00">
+                2018-08-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/26/Swift实现常用排序算法总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/08/26/Swift实现常用排序算法总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/301129-dba6aa55060bbe7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="排序算法基础"><a href="#排序算法基础" class="headerlink" title="排序算法基础"></a>排序算法基础</h3><p>排序算法，是一种能将一串数据按照特定的排序方式进行排列的一种算法，一个排序算法的好坏，主要从时间复杂度，空间复杂度，稳定性来衡量。</p>
+<h4 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h4><p>时间复杂度是一个函数，它描述了该算法的运行时间，考察的是当输入值大小趋近无穷时的情况。数学和计算机科学中使用这个大 O 符号用来标记不同”阶“的无穷大。这里的无穷被认为是一个超越边界而增加的概念，而不是一个数。</p>
+<p>想了解时间复杂度，我想讲讲常见的 O(1)，O(log n)，O(n)，O(n log n)，O(n^2) ，计算时间复杂度的过程，常常需要分析一个算法运行过程中需要的基本操作，计量所有操作的数量。</p>
+<h5 id="O（1）常数阶"><a href="#O（1）常数阶" class="headerlink" title="O（1）常数阶"></a>O（1）常数阶</h5><p>O（1）中的 1 并不是指时间为 1，也不是操作数量为 1，而是表示操作次数为一个常数，不因为输入 n 的大小而改变，比如哈希表里存放 1000 个数据或者 10000 个数据，通过哈希码查找数据时所需要的操作次数都是一样的，而操作次数和时间是成线性关系的，所以时间复杂度为 O（1）的算法所消耗的时间为常数时间。</p>
+<h5 id="O（log-n）对数阶"><a href="#O（log-n）对数阶" class="headerlink" title="O（log n）对数阶"></a>O（log n）对数阶</h5><p>O（log n）中的 log n 是一种简写，loga n 称作为以 a 为底 n 的对数，log n 省略掉了 a，所以 log n 可能是 log2 n，也可能是 log10 n。但不论对数的底是多少，O（log n）是对数时间算法的标准记法，对数时间是非常有效率的，例如有序数组中的二分查找，假设 1000 个数据查找需要 1 单位的时间， 1000,000 个数据查找则只需要 2 个单位的时间，数据量平方了但时间只不过是翻倍了。如果一个算法他实际的得操作数是 log2 n + 1000， 那它的时间复杂度依旧是 log n， 而不是 log n + 1000，时间复杂度可被称为是渐近时间复杂度，在 n 极大的情况，1000 相对 与 log2 n 是极小的，所以 log2 n + 1000 与 log2 n 渐进等价。</p>
+<h5 id="O（n）线性阶"><a href="#O（n）线性阶" class="headerlink" title="O（n）线性阶"></a>O（n）线性阶</h5><p>如果一个算法的时间复杂度为 O(n)，则称这个算法具有线性时间，或 O(n) 时间。这意味着对于足够大的输入，运行时间增加的大小与输入成线性关系。例如，一个计算列表所有元素的和的程序，需要的时间与列表的长度成正比。遍历无序数组寻最大数，所需要的时间也与列表的长度成正比。</p>
+<h5 id="O（n-log-n）线性对数阶"><a href="#O（n-log-n）线性对数阶" class="headerlink" title="O（n log n）线性对数阶"></a>O（n log n）线性对数阶</h5><p>排序算法中的快速排序的时间复杂度即 O（n log n），它通过递归 log2n 次，每次遍历所有元素，所以总的时间复杂度则为二者之积， 复杂度既 O（n log n）。</p>
+<h5 id="O（n-2）平方阶"><a href="#O（n-2）平方阶" class="headerlink" title="O（n^2）平方阶"></a>O（n^2）平方阶</h5><p>冒泡排序的时间复杂度既为 O（n^2），它通过平均时间复杂度为 O（n）的算法找到数组中最小的数放置在争取的位置，而它需要寻找 n 次，不难理解它的时间复杂度为 O（n^2）。时间复杂度为 O（n^2）的算法在处理大数据时，是非常耗时的算法，例如处理 1000 个数据的时间为 1 个单位的时间，那么 1000,000 数据的处理时间既大约 1000,000 个单位的时间。</p>
+<p>时间复杂度又有最优时间复杂度，最差时间复杂度，平均时间复杂度。部分算法在对不同的数据进行操作的时候，会有不同的时间消耗，如快速排序，最好的情况是 O（n log n），最差的情况是 O（n^2），而平均复杂度就是所有情况的平均值，例如快速排序计算平均复杂度的公式为</p>
+<h5 id="时间复杂度效率比较"><a href="#时间复杂度效率比较" class="headerlink" title="时间复杂度效率比较"></a>时间复杂度效率比较</h5><p>除了上述所说的时间复杂度，下表中展示了其他一些时间复杂度，以及这些时间复杂度之间的比较。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-c585d6fb81faccfe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>想O(n^3)、O(n!)等这样的时间复杂度，过大的n会使算法变得不现实，都是时间的噩梦，所以这种不切实际的复杂度，一般都不会去考虑这样的算法。</p>
+<h4 id="空间复杂度"><a href="#空间复杂度" class="headerlink" title="空间复杂度"></a>空间复杂度</h4><p>和时间复杂度一样，有 O(1)，O(log n)，O(n)，O(n log n)，O(n^2)，等等。实际写代码的过程中完全可以用空间来换取时间。比如判断2017年之前的某一年是不是闰年，通常可以使通过一个算法来解决。但还有另外一种做法就是将2017年之前的闰年保存到一个数组中。如果某一年存在这个数组中就是闰年，反之就不是。一般来说时间复杂度和空间复杂度是矛盾的。到底优先考虑时间复杂度还是空间复杂度，取决于实际的应用场景。</p>
+<h4 id="稳定性"><a href="#稳定性" class="headerlink" title="稳定性"></a>稳定性</h4><p>假定在待排序的记录序列中，存在多个具有相同的关键字的记录，若经过排序，这些记录的相对次序保持不变，即在原序列中，ri = rj，且 ri 在 rj 之前，而在排序后的序列中，ri 仍在 rj 之前，则称这种排序算法是稳定的；否则称为不稳定的。</p>
+<p>当相等的元素是无法分辨的，比如像是整数，稳定性并不是一个问题。然而，假设以下的数对将要以他们的第一个数字来排序。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(4, 1)  (3, 1)  (3, 7) （5, 6）</div></pre></td></tr></table></figure></p>
+<p>在这个状况下，有可能产生两种不同的结果，一个是让相等键值的纪录维持相对的次序，而另外一个则没有：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">(3, 1)  (3, 7)  (4, 1)  (5, 6)  （维持次序）</div><div class="line">(3, 7)  (3, 1)  (4, 1)  (5, 6)  （次序被改变）</div></pre></td></tr></table></figure></p>
+<p>不稳定排序算法可能会在相等的键值中改变纪录的相对次序，这导致我们无法准确预料排序结果（除非你把数据在你的大脑里用该算法跑一遍），但是稳定排序算法从来不会如此。例如冒泡排序即稳定的存在，相等不交换则不打乱原有顺序。而快速排序有时候则是不稳定的。</p>
+<h3 id="常见排序算法"><a href="#常见排序算法" class="headerlink" title="常见排序算法"></a>常见排序算法</h3><p>本文介绍6种常用排序算法，包括冒泡、选择、插入、快排、堆排、希尔排序。下面从排序算法的原理、解题步骤、实现代码三个方面去介绍排序。</p>
+<h4 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h4><h5 id="原理解析"><a href="#原理解析" class="headerlink" title="原理解析"></a>原理解析</h5><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F" target="_blank" rel="external"><strong>冒泡排序</strong></a>（英语：<strong>Bubble Sort</strong>）是一种简单的<a href="https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95" title="排序算法" target="_blank" rel="external">排序算法</a>。它重复地走访过要排序的数列，一次比较两个元素，如果他们的顺序错误就把他们交换过来。走访数列的工作是重复地进行直到没有再需要交换，也就是说该数列已经排序完成。这个算法的名字由来是因为越小的元素会经由交换慢慢“浮”到数列的顶端。</p>
+</blockquote>
+<p>冒泡排序的理念十分简单：不断比较相邻的两个元素，如果它们的顺序不符合要求就互相调换。</p>
+<h5 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a>解题步骤</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">步骤如下：</div><div class="line">* 比较相邻的元素。如果第一个比第二个大，就交换他们两个，直到把最大的元素放到数组尾部。</div><div class="line">* 遍历长度减一，对剩下的元素从头重复以上的步骤。</div><div class="line">* 直到没有任何一对数字需要比较时完成。</div></pre></td></tr></table></figure>
+<p>假如需要对 1 4 6 2 8 这五个数按照从大到小的排序进行排列，那么我们应该怎么入手解决呢？</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-dc7bad40415a92c1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>首先，比较第 1 位数和第 2 位数的大小。很明显 1 要小于 4，所以我们把 1 和 4 的位置互换一下。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-08728d5fbdc8740b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>然后，我们继续比较第 2位数和第 3 位数，发现 1 要小于 6，因此把 1 和 6 的位置互换。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-1fd89fb5c3893711.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>继续比较第 3 位和第 4 位数，1 要小于 2，根据要求把 1 和 2 的位置互换。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-34aedcee76466a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>最后比较第 4 位和第 5 位数，显然 1 小于 8，同理把 1 和 8 的位置互换。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-6662537e8fe78259.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>经过这样一轮操作，我们已经不知不觉中把数字 1 的位置放好了，1 是这五个数字中数值最小的，应该排在最后一位。<br>我们回过头来，看看刚刚才的排序过程，1 的位置经由交换慢慢“浮”到数列的顶端，是不是很像气泡上浮的过程，这也是冒泡排序算法这个名字的由来。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-68a678a2dcf9bd2e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>第一轮操作结束后，我们把五个数字中数值最小的 1 摆放好了。第二轮操作我们将会把五个数字中数值第二小的 2 摆放好。仔细想想这个规律，是不是很有意思？同样按照第一轮的规则进行操作，先比较第 1 位和第 2 位数，依此类推，过程如下。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-cd3722346729ab31.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">func bubbleSort() &#123;//冒泡排序</div><div class="line">    var list = [61,5,33,44,22]</div><div class="line">    for i in 0..&lt;list.count &#123;//找到符合条件的数进行交换</div><div class="line">        for j in i+1..&lt;list.count &#123;</div><div class="line">            if list[j] &gt; list[i] &#123;</div><div class="line">                let temp = list[j]</div><div class="line">                list[j] = list[i]</div><div class="line">                list[i] = temp</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    print(list)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最好的情况下，即待排序的数组本身是有序的，比较的次数是 n-1 次，没有数据交换，时间复杂度为O(n)。最坏的情况下，即待排序的数组是完全逆序的情况，此时需要比较 n*(n-1)/2 次。因此时间复杂度是O(n^2)。</p>
+<h4 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h4><h5 id="原理解析-1"><a href="#原理解析-1" class="headerlink" title="原理解析"></a>原理解析</h5><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F" target="_blank" rel="external"><strong>选择排序</strong></a>（Selection sort）是一种简单直观的<a href="https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95" title="排序算法" target="_blank" rel="external">排序算法</a>。它的工作原理如下。首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。</p>
+</blockquote>
+<p>选择排序的基本思想就是通过 n-i 次关键字之间的比较，从n-i+1个记录中选出关键字最小的记录，并和第i个记录做交换，而不是像冒泡排序那样，每一次比较之后，符合条件的都做一次交换。选择排序相对于冒泡排序做的交换次数更少。</p>
+<h5 id="解题步骤-1"><a href="#解题步骤-1" class="headerlink" title="解题步骤"></a>解题步骤</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">步骤如下：</div><div class="line">* 遍历数组，找到最小的元素，将其置于数组起始位置。</div><div class="line">* 从上次最小元素存放的后一个元素开始遍历至数组尾，将最小的元素置于开始处。</div><div class="line">* 重复上述过程，直到元素排序完毕。</div></pre></td></tr></table></figure>
+<p>以数组 arr = [8, 5, 2, 6, 9, 3, 1, 4, 0, 7] 为例，先直观看一下每一步的变化，后面再介绍细节</p>
+<p>第一次从数组 [8, 5, 2, 6, 9, 3, 1, 4, 0, 7] 中找到最小的数 0，放到数组的最前面（与第一个元素进行交换）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">                               min</div><div class="line">                                ↓</div><div class="line">8   5   2   6   9   3   1   4   0   7</div><div class="line">↑                               ↑</div><div class="line">└───────────────────────────────┘</div></pre></td></tr></table></figure>
+<p>交换后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0   5   2   6   9   3   1   4   8   7</div></pre></td></tr></table></figure>
+<p>在剩余的序列中 [5, 2, 6, 9, 3, 1, 4, 8, 7] 中找到最小的数 1，与该序列的第一个个元素进行位置交换：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">                       min</div><div class="line">                        ↓</div><div class="line">0   5   2   6   9   3   1   4   8   7</div><div class="line">    ↑                   ↑</div><div class="line">    └───────────────────┘</div></pre></td></tr></table></figure>
+<p>交换后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0   1   2   6   9   3   5   4   8   7</div></pre></td></tr></table></figure>
+<p>在剩余的序列中 [2, 6, 9, 3, 5, 4, 8, 7] 中找到最小的数 2，与该序列的第一个个元素进行位置交换（实际上不需要交换）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">       min</div><div class="line">        ↓</div><div class="line">0   1   2   6   9   3   5   4   8   7</div><div class="line">        ↑</div></pre></td></tr></table></figure>
+<p>重复上述过程，直到最后一个元素就完成了排序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">                   min</div><div class="line">                    ↓</div><div class="line">0   1   2   6   9   3   5   4   8   7</div><div class="line">            ↑       ↑</div><div class="line">            └───────┘</div><div class="line">                           min</div><div class="line">                            ↓</div><div class="line">0   1   2   3   9   6   5   4   8   7</div><div class="line">                ↑           ↑</div><div class="line">                └───────────┘</div><div class="line">                       min</div><div class="line">                        ↓</div><div class="line">0   1   2   3   4   6   5   9   8   7</div><div class="line">                    ↑   ↑</div><div class="line">                    └───┘</div><div class="line">                       min</div><div class="line">                        ↓</div><div class="line">0   1   2   3   4   5   6   9   8   7</div><div class="line">                        ↑   </div><div class="line">                                   min</div><div class="line">                                    ↓</div><div class="line">0   1   2   3   4   5   6   9   8   7</div><div class="line">                            ↑       ↑</div><div class="line">                            └───────┘  </div><div class="line">                               min</div><div class="line">                                ↓</div><div class="line">0   1   2   3   4   5   6   7   8   9</div><div class="line">                                ↑      </div><div class="line">                                   min</div><div class="line">                                    ↓</div><div class="line">0   1   2   3   4   5   6   7   8   9</div><div class="line">                                    ↑</div></pre></td></tr></table></figure>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-e69f8b94a4d9f703.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<h5 id="实现代码-1"><a href="#实现代码-1" class="headerlink" title="实现代码"></a>实现代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">func chooseSort() &#123;//选择排序</div><div class="line">    var list = [61,5,33,44,22]</div><div class="line">    for i in 0..&lt;list.count &#123;</div><div class="line">        var min = i//记录当前最小的数，比较i+1后更大的数进行记录</div><div class="line">        for j in i+1..&lt;list.count &#123;</div><div class="line">            if list[j] &lt; list[min] &#123;</div><div class="line">                min = j</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        let temp = list[min]</div><div class="line">        list[min] = list[i]</div><div class="line">        list[i] = temp</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    print(list)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注意简单选择排序中的数据交换是放在第一层for循环内部，当寻找到目标下标才进行数据交换。而冒泡排序的数据交互是放在第二层for循环内，因此排序相同的数据冒泡执行的交换次数会大于或等于选择排序。但是通过仔细分析时间复杂度可以得出，无论是在最好还是最差的情况下，比较的次数都是n*(n-1)/2。所以选择排序的时间复杂度也是O(n^2)。虽然和冒泡排序的时间复杂度相等，但简单选择排序在性能上要略微优于冒泡排序。</p>
+<h4 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h4><h5 id="原理解析-2"><a href="#原理解析-2" class="headerlink" title="原理解析"></a>原理解析</h5><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F" target="_blank" rel="external"><strong>插入排序</strong></a>（英语：Insertion Sort）是一种简单直观的<a href="https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95" title="排序算法" target="_blank" rel="external">排序算法</a>。它的工作原理是通过构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。<strong>插入排序</strong>在实现上，通常采用in-place排序（即只需用到O(1)的额外空间的排序），因而在从后向前扫描过程中，需要反复把已排序元素逐步向后挪位，为最新元素提供插入空间。</p>
+</blockquote>
+<p>它的工作原理是通过构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。</p>
+<h5 id="解题步骤-2"><a href="#解题步骤-2" class="headerlink" title="解题步骤"></a>解题步骤</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">步骤如下：</div><div class="line">* 从第一个元素开始，该元素可以认为已经被排序</div><div class="line">* 取出下一个元素，在已经排序的元素序列中从后向前扫描</div><div class="line">* 如果该元素（已排序）大于新元素，将该元素移到下一位置</div><div class="line">* 重复步骤3，直到找到已排序的元素小于或者等于新元素的位置</div><div class="line">* 将新元素插入到该位置后</div><div class="line">* 重复步骤2~5</div></pre></td></tr></table></figure>
+<p>我们需要整理一个无序数组为［8，3，5，4，6］。<br>取出第一个数字8，得到新的数组［8］。无序数组变为［3，5，4，6］。<br>取出第二个数字3，插入新的数组里，3比8小，得到［3，8］。无序数组变为［5，4，6］。<br>取出第三个数字5，插入新的数组里，5比3大，比8小，得到［3，5，8］。无序数组变为［4，6］。<br>取出第四个数字4，插入新的数组里，4比3大，比5小，得到［3，4，5，8］。无序数组变为［6］。<br>最后取出6，插入新数组里，6比5大，比8小，得到［3，4，5，6，8］。排序完成。</p>
+<p>我们可以将需要交换位置的数字直接向右移动，然后将新的数字直接复制到正确的位置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[ 3，5，8，4｜6 ]   记住4</div><div class="line">          ＊</div><div class="line"></div><div class="line">[ 3，5，8，8｜6 ]  将8转移到右侧</div><div class="line">        --&gt;</div><div class="line"></div><div class="line">[ 3，5，5，8｜6 ]  将5转移到右侧</div><div class="line">     --&gt;</div><div class="line"></div><div class="line">[ 3，4，5，8｜6 ]  将4复制粘贴到新的位置</div><div class="line">     ＊</div></pre></td></tr></table></figure></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-1ad09cc379d33ef3.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<h5 id="实现代码-2"><a href="#实现代码-2" class="headerlink" title="实现代码"></a>实现代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line">func insertSort() &#123;//插入排序</div><div class="line">    var list = [61,5,33,44,22]</div><div class="line">    </div><div class="line">    var nlist = [list[0]]//建立一个空数，符合条件的插入，没插入的尾后添加</div><div class="line">    for i in 1..&lt;list.count &#123;</div><div class="line">        var max: Int? = nil</div><div class="line">        for j in 0..&lt;nlist.count &#123;</div><div class="line">            if list[i] &gt; nlist[j] &#123;</div><div class="line">                max = i</div><div class="line">                nlist.insert(list[i], at: j)</div><div class="line">                break</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        if max == nil &#123;</div><div class="line">            nlist.append(list[i])</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    print(nlist)</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">func insertSortOne() &#123;//插入排序 通过交换</div><div class="line">    var list = [61,5,33,44,22]</div><div class="line">    </div><div class="line">    for i in 1..&lt;list.count &#123;</div><div class="line">        var y = i//从i往前找，符合条件交换</div><div class="line">        </div><div class="line">        while y&gt;0 &amp;&amp; list[y] &gt; list[y-1] &#123;</div><div class="line">            let temp = list[y]</div><div class="line">            list[y] = list[y-1]</div><div class="line">            list[y-1] = temp</div><div class="line">            y -= 1</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    print(list)</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line">func insertSortTwo() &#123;//插入排序 通过移动</div><div class="line">    var list = [61,5,33,44,22]</div><div class="line">    </div><div class="line">    for i in 1..&lt;list.count &#123;</div><div class="line">        var y = i//从i往前找，符合条件移动</div><div class="line">        let temp = list[y]</div><div class="line">        while y&gt;0 &amp;&amp; temp &gt; list[y-1] &#123;</div><div class="line">            list[y] = list[y-1]</div><div class="line">            y -= 1</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        list[y] = temp//找到y赋值</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    print(list)</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最好的情况下，完全没有任何数据移动，时间复杂度是O(n)。最坏的情况下，比较的次数为 (n+2) <em> (n-1)/2，移动的次数最大值为(n+4) </em> (n-1)/2。如果按照序列的好坏程度是随机的，且概率都是相同的，则平均比较次数以及平均移动次数都约为 n^2/4次，所以时间复杂度为O(n ^ 2)。通过和冒泡以及简单选择排序对比，不难看出直接插入排序的性能稍微比前两者好上一些。</p>
+<p>对于插值排序算法来说，O(n^2)是它最差和平均性能表现。因为它的函数里含有两个循环。其它类型的排序算法，比如快速排序和归并排序，在输入数据量很大的情况下，可以达到O(nlogn)的效果。</p>
+<p>插值排序对于小数据量的排序来说非常快。在一些标准程序库里，如果数据大小不大于10，它们会用插值排序来取代快速排序。</p>
+<h4 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h4><h5 id="原理解析-3"><a href="#原理解析-3" class="headerlink" title="原理解析"></a>原理解析</h5><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F" target="_blank" rel="external">快速排序</a>（英语：Quicksort），又称划分交换排序（partition-exchange sort），简称快排，一种排序算法，最早由<a href="https://zh.wikipedia.org/wiki/%E6%9D%B1%E5%B0%BC%C2%B7%E9%9C%8D%E7%88%BE" target="_blank" rel="external">东尼·霍尔</a>提出。在平均状况下，排序n个项目要O(nlog n)次比较。在最坏状况下则需要 O(n^2)次比较，但这种状况并不常见。事实上，快速排序O(nlog n)通常明显比其他算法更快，因为它的内部循环（inner loop）可以在大部分的架构上很有效率地达成。</p>
+</blockquote>
+<p>快速排序（Quicksort）是对冒泡排序的一种改进。它的基本思想是：通过一趟排序将要排序的数据分割成独立的两部分，其中一部分的所有数据都比另外一部分的所有数据都要小，然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据变成有序序列。</p>
+<h5 id="解题步骤-3"><a href="#解题步骤-3" class="headerlink" title="解题步骤"></a>解题步骤</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">步骤：</div><div class="line">* 从数列中挑出一个元素，称为 “基准”（pivot），</div><div class="line">* 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作。</div><div class="line">* 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。</div></pre></td></tr></table></figure>
+<p>实现从大到小排序，快排的思想就是从左向右查找，比基准小的交换到右边区域，从右向左查找，比基准大的交换到左边区域。</p>
+<p><strong>也就是找到一个pivot，从左向右查找，如果比基准大的，继续查找，比基准小的，记录当前位置，然后从右向左查找，如果比基准小的，继续查找，比基准大的，记录当前位置，然后和左边的记录进行交换，再把基准数和中间数进行交换，保证基准在中间，两边分的区大于或小于基准。查找结束以左边等于右边的查找位置结束，然后继续以上步骤继续分区查找。</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-67fcfa0ffc86e40a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>根据下图理解步骤</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-49d565ecb17b327c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="实现代码-3"><a href="#实现代码-3" class="headerlink" title="实现代码"></a>实现代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">func quickSort(list: inout [Int], left: Int, right: Int) &#123;</div><div class="line">    if left &gt; right &#123;//左边往右边移，右边往左边移动，最后过了就停止</div><div class="line">        return</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    var i, j, pivot: Int</div><div class="line">    </div><div class="line">    i = left</div><div class="line">    j = right</div><div class="line">    pivot = list[left]</div><div class="line">    </div><div class="line">    while i != j &#123;</div><div class="line">        </div><div class="line">        while list[j] &lt;= pivot &amp;&amp; i &lt; j &#123;//右边大的往左移动</div><div class="line">            j -= 1</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        while list[i] &gt;= pivot &amp;&amp; i &lt; j &#123;//左边小的往右移动</div><div class="line">            i += 1</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        if i &lt; j &#123;//找到两个对方区域的值进行交换</div><div class="line">            let temp = list[i]</div><div class="line">            list[i] = list[j]</div><div class="line">            list[j] = temp</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    list[left] = list[i]//此时i和j相等，处于中间位置，替换pivot值</div><div class="line">    list[i] = pivot</div><div class="line">    </div><div class="line">    //重复以上动作</div><div class="line">    quickSort(list: &amp;list, left: left, right: i-1)</div><div class="line">    quickSort(list: &amp;list, left: i+1, right: right)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>快排的时间复杂度为时间复杂度 O(n log n)。最差情况，递归调用 n 次，即空间复杂度为 O(n)。最好情况，递归调用 log n 次，空间复杂度为 O(log n)，空间复杂度一般看最差情况，时间可以平均，但空间一定得满足，所以空间复杂度为 O(n)。</p>
+<p>当待排序元素类似[6,1,3,7,3]且基准元素为6时，经过分区，形成[1,3,3,6,7],两个3的相对位置发生了改变，所是快速排序是一种不稳定排序。</p>
+<h4 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h4><h5 id="原理解析-4"><a href="#原理解析-4" class="headerlink" title="原理解析"></a>原理解析</h5><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E5%A0%86%E6%8E%92%E5%BA%8F" target="_blank" rel="external"><strong>堆排序</strong></a>（英语：Heapsort）是指利用<a href="https://zh.wikipedia.org/wiki/%E5%A0%86_(%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84" target="_blank" rel="external">堆</a> “堆 (数据结构)”)这种数据结构所设计的一种<a href="https://zh.wikipedia.org/wiki/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95" title="排序算法" target="_blank" rel="external">排序算法</a>。堆积是一个近似<a href="https://zh.wikipedia.org/wiki/%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91" title="完全二叉树" target="_blank" rel="external">完全二叉树</a>的结构，并同时满足<strong>堆积的性质</strong>：即子结点的键值或索引总是小于（或者大于）它的父节点。</p>
+</blockquote>
+<p>堆排序（Heap Sort）是指利用堆这种数据结构所设计的一种排序算法。堆是一个近似完全二叉树的结构，并同时满足堆性质：即子结点的键值或索引总是小于（或者大于）它的父节点。</p>
+<h5 id="解题步骤-4"><a href="#解题步骤-4" class="headerlink" title="解题步骤"></a>解题步骤</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">步骤：</div><div class="line">*   最大堆调整（Max_Heapify）：将堆的末端子节点作调整，使得子节点永远小于父节点</div><div class="line">*   创建最大堆（Build_Max_Heap）：将堆所有数据重新排序</div><div class="line">*   堆排序（HeapSort）：移除位在第一个数据的根节点，并做最大堆调整的递归运算</div></pre></td></tr></table></figure>
+<p>通常堆是通过一维<a href="https://zh.wikipedia.org/wiki/%E6%95%B0%E7%BB%84" title="数组" target="_blank" rel="external">数组</a>来实现的。在数组起始位置为0的情形中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">* 父节点 i 的左子节点在位置 (2 * i + 1);</div><div class="line">* 父节点 i 的右子节点在位置 (2 * i + 2);</div><div class="line">* 子节点 i 的父节点在位置 floor((i - 1) / 2);</div></pre></td></tr></table></figure>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-e5687ec5853de1c1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>floor 函数的作用是向下取整，所以左子节点右子节点都能通过这个公式找到正确的父节点。</p>
+<p>最大堆调整（MAX‐HEAPIFY）的作用是保持最大堆的性质，是创建最大堆的核心子程序，作用过程如图所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-b32022f3e43e6784.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>调整大顶堆的公式要准守任意一个节点i可以实现：i&gt;=2i+1，i&gt;=2i+2。也就是父节点大于等于左右两个子节点。</p>
+<p><strong>所以从小到大的排序思路是：把一堆数字调整成大顶堆–&gt;堆顶元素和末尾元素交换–&gt;去掉末尾元素，继续大顶堆调整–&gt;重复以上动作</strong></p>
+<p>创建最大堆（Build-Max-Heap）的作用是将一个数组改造成一个最大堆，接受数组和堆大小两个参数，Build-Max-Heap 将自下而上的调用 Max-Heapify 来改造数组，建立最大堆。因为 Max-Heapify 能够保证下标 i 的结点之后结点都满足最大堆的性质，所以自下而上的调用 Max-Heapify 能够在改造过程中保持这一性质。如果最大堆的数量元素是 n，那么 Build-Max-Heap 从 Parent(n) 开始，往上依次调用 Max-Heapify。流程如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-a7d64f801fc64948.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="实现代码-4"><a href="#实现代码-4" class="headerlink" title="实现代码"></a>实现代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">func heapSort(arr:inout Array&lt;Int&gt;) &#123;</div><div class="line">    //1.构建大顶堆</div><div class="line">    for i in (0...(arr.count/2-1)).reversed()&#123;//从二叉树的一边的最后一个节点开始</div><div class="line">        //从第一个非叶子结点从下至上，从右至左调整结构</div><div class="line">        adjustHeap(arr: &amp;arr, i: i, length: arr.count)</div><div class="line">    &#125;</div><div class="line">    //2.调整堆结构+交换堆顶元素与末尾元素</div><div class="line">    for j in (1...(arr.count-1)).reversed()&#123;</div><div class="line">        arr.swapAt(0, j)//将堆顶元素与末尾元素进行交换</div><div class="line">        adjustHeap(arr: &amp;arr, i: 0, length: j)//重新对堆进行调整</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 调整大顶堆（仅是调整过程，建立在大顶堆已构建的基础上）</div><div class="line"> */</div><div class="line">func adjustHeap(arr:inout Array&lt;Int&gt;,i:Int,length:Int) &#123;</div><div class="line">    var i = i;</div><div class="line">    let temp = arr[i];//先取出当前元素i</div><div class="line">    var k=2*i+1</div><div class="line">    while k&lt;length &#123;//从i结点的左子结点开始，也就是2i+1处开始</div><div class="line">        if(k+1&lt;length &amp;&amp; arr[k]&lt;arr[k+1])&#123;//如果左子结点小于右子结点，k指向右子结点</div><div class="line">            k+=1;</div><div class="line">        &#125;</div><div class="line">        if(arr[k] &gt; temp)&#123;//如果子节点大于父节点，将子节点值赋给父节点（不用进行交换）</div><div class="line">            arr[i] = arr[k];</div><div class="line">            i = k;//记录当前节点</div><div class="line">        &#125;else&#123;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">        k=k*2+1//下一个节点</div><div class="line">    &#125;</div><div class="line">    arr[i] = temp;//将temp值放到最终的位置</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码中总过分为两个for循环。第一个for循环就是将现在的待排序序列构建为一个最大堆，也就是maxHeap()函数的任务。第二个for循环就是逐步将每个最大值的根节点和末尾元素进行交换，然后再调整为最大堆。</p>
+<p>在构建堆的过程中，由于是是完全二叉树从最下层最右边非终端节点开始构建，将它与子节点进行比较，对于每个非终端节点而言，最多进行两次比较和交换操作，因此构建堆的时间复杂度为O(n)。在整个排序过程中，第 i 次去堆顶记录重建堆需要时间为logi ,并且需要取 n - 1次堆记录，所以重建对的时间复杂度为O(nlogn)。所以对的时间复杂度为O(nlogn)。<br>空间上只需一个暂存单元。由于记录的比较是跳跃进行的，所以堆排序是一种不稳定的排序。最后要提醒一点，由于初始构建堆的所需的比较次数比较多。所以，一般不适合排序个数较少的数组。</p>
+<h4 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h4><h5 id="原理解析-5"><a href="#原理解析-5" class="headerlink" title="原理解析"></a>原理解析</h5><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F" target="_blank" rel="external"><strong>希尔排序</strong></a>，也称<strong>递减增量排序算法</strong>，是<a href="https://zh.wikipedia.org/wiki/%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F" title="插入排序" target="_blank" rel="external">插入排序</a>的一种更高效的改进版本。希尔排序是非稳定排序算法。</p>
+</blockquote>
+<p>希尔排序是基于插入排序的以下两点性质而提出改进方法的：</p>
+<ul>
+<li>插入排序在对几乎已经排好序的数据操作时，效率高，即可以达到<a href="https://zh.wikipedia.org/w/index.php?title=%E7%BA%BF%E6%80%A7%E6%8E%92%E5%BA%8F&amp;action=edit&amp;redlink=1" title="线性排序（页面不存在）" target="_blank" rel="external">线性排序</a>的效率</li>
+<li>但插入排序一般来说是低效的，因为插入排序每次只能将数据移动一位</li>
+</ul>
+<p>与插入排序通过对比相邻的两个元素的大小并在必要时候交换位置，希尔排序是通过比较相隔很远的两个元素。</p>
+<p>两个元素之间的距离称为间隔。如果两个元素在比较之后需要交换位置，则直接更换彼此的位置。这个过程减少了插值排序中很多不必要的中间复制过程，即从两个元素更换位置前需要不断交换相邻元素的位置直到目的位置。<br>这里的最主要的思想就是，元素通过每次移动较大间隔，整个数组可以快速形成局部排序好的情况。这个会让接下来的交换变得更加快速。因为元素之间不需要进行过多次的位置交换。</p>
+<p>一旦某一距离长度的间隔比值交换完成，间隔会变得越来越小，然后进行相应间隔的比值交换，这样的过程不断重复，直到间隔为1，也就是与插值排序同样过程的情况。然而，在希尔排序中，由于大部分数据在此时已经整理完毕，所以最后间隔为1的比值交换速度非常快。</p>
+<h5 id="解题步骤-5"><a href="#解题步骤-5" class="headerlink" title="解题步骤"></a>解题步骤</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">步骤如下：</div><div class="line">* 希尔排序是把记录按下标的一定增量分组，对每组使用直接插入排序算法排序；</div><div class="line">* 随着增量逐渐减少，每组包含的关键词越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。</div></pre></td></tr></table></figure>
+<p>以n=10的一个数组49, 38, 65, 97, 26, 13, 27, 49, 55, 4为例</p>
+<p>第一次增量 gap = 10 / 2 = 5</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">49   38   65   97   26   13   27   49   55   4</div><div class="line"></div><div class="line">1A                       1B</div><div class="line"></div><div class="line">     2A                       2B</div><div class="line"></div><div class="line">          3A                       3B</div><div class="line"></div><div class="line">               4A                       4B</div><div class="line"></div><div class="line">                    5A                       5B</div></pre></td></tr></table></figure>
+<p>1A,1B，2A,2B等为分组标记，数字相同的表示在同一组，大写字母表示是该组的第几个元素， 每次对同一组的数据进行直接插入排序。即分成了五组(49, 13) (38, 27) (65, 49)  (97, 55)  (26, 4)这样每组排序后就变成了(13, 49)  (27, 38)  (49, 65)  (55, 97)  (4, 26)，下同。</p>
+<p>第二次增量 gap = 5 / 2 = 2</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">13   27   49   55   4    49   38   65   97   26</div><div class="line"></div><div class="line">1A        1B        1C        1D        1E</div><div class="line"></div><div class="line">     2A        2B        2C        2D        2E</div></pre></td></tr></table></figure>
+<p>第三次增量 gap = 2 / 2 = 1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">4   26   13   27   38    49   49   55   97   65</div><div class="line"></div><div class="line">1A  1B   1C   1D   1E    1F   1G   1H   1I   1J</div></pre></td></tr></table></figure>
+<p>第四次增量 gap = 1 / 2 = 0 排序完成得到数组：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">4   13   26   27   38    49   49   55   65   97</div></pre></td></tr></table></figure>
+<h5 id="实现代码-5"><a href="#实现代码-5" class="headerlink" title="实现代码"></a>实现代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">func shellSort(arr: inout [Int]) &#123;//希尔排序</div><div class="line">    var j: Int</div><div class="line">    var gap = arr.count / 2//获取增量</div><div class="line">    </div><div class="line">    while  gap &gt; 0 &#123;</div><div class="line">        for i in 0 ..&lt; gap &#123;</div><div class="line">            j = i + gap</div><div class="line">            while j &lt; arr.count &#123;</div><div class="line">                if arr[j] &lt; arr[j - gap] &#123;</div><div class="line">                    let temp = arr[j]</div><div class="line">                    var k = j - gap</div><div class="line">                    while (k &gt;= 0 &amp;&amp; arr[k] &gt; temp) &#123;//插入排序</div><div class="line">                        arr[k + gap] = arr[k]</div><div class="line">                        k -= gap</div><div class="line">                    &#125;</div><div class="line">                    arr[k + gap] = temp</div><div class="line">                &#125;</div><div class="line">                </div><div class="line">                j += gap</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">        &#125;</div><div class="line">        gap /= 2//增量减半</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>希尔排序时间复杂度<br>希尔排序的时间复杂度与增量(即，步长gap)的选取有关。例如，当增量为1时，希尔排序退化成了直接插入排序，此时的时间复杂度为O(N²)，而Hibbard增量的希尔排序的时间复杂度为O(N3/2)。</p>
+</li>
+<li><p>希尔排序稳定性<br>希尔排序是不稳定的算法，它满足稳定算法的定义。对于相同的两个数，可能由于分在不同的组中而导致它们的顺序发生变化。<br>算法稳定性 – 假设在数列中存在a[i]=a[j]，若在排序之前，a[i]在a[j]前面；并且排序之后，a[i]仍然在a[j]前面。则这个排序算法是稳定的！</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/03/Codable项目实践踩坑总结/" rel="next" title="Codable项目实践踩坑总结">
+                <i class="fa fa-chevron-left"></i> Codable项目实践踩坑总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/26/iOS设计模式详解/" rel="prev" title="iOS设计模式详解">
+                iOS设计模式详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a7c14cb6fb9a0635d0c0c4f/posts" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#排序算法基础"><span class="nav-number">1.</span> <span class="nav-text">排序算法基础</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#时间复杂度"><span class="nav-number">1.1.</span> <span class="nav-text">时间复杂度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#O（1）常数阶"><span class="nav-number">1.1.1.</span> <span class="nav-text">O（1）常数阶</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#O（log-n）对数阶"><span class="nav-number">1.1.2.</span> <span class="nav-text">O（log n）对数阶</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#O（n）线性阶"><span class="nav-number">1.1.3.</span> <span class="nav-text">O（n）线性阶</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#O（n-log-n）线性对数阶"><span class="nav-number">1.1.4.</span> <span class="nav-text">O（n log n）线性对数阶</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#O（n-2）平方阶"><span class="nav-number">1.1.5.</span> <span class="nav-text">O（n^2）平方阶</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#时间复杂度效率比较"><span class="nav-number">1.1.6.</span> <span class="nav-text">时间复杂度效率比较</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#空间复杂度"><span class="nav-number">1.2.</span> <span class="nav-text">空间复杂度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#稳定性"><span class="nav-number">1.3.</span> <span class="nav-text">稳定性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见排序算法"><span class="nav-number">2.</span> <span class="nav-text">常见排序算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#冒泡排序"><span class="nav-number">2.1.</span> <span class="nav-text">冒泡排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理解析"><span class="nav-number">2.1.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解题步骤"><span class="nav-number">2.1.2.</span> <span class="nav-text">解题步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现代码"><span class="nav-number">2.1.3.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#选择排序"><span class="nav-number">2.2.</span> <span class="nav-text">选择排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理解析-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解题步骤-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">解题步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现代码-1"><span class="nav-number">2.2.3.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#插入排序"><span class="nav-number">2.3.</span> <span class="nav-text">插入排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理解析-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解题步骤-2"><span class="nav-number">2.3.2.</span> <span class="nav-text">解题步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现代码-2"><span class="nav-number">2.3.3.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#快速排序"><span class="nav-number">2.4.</span> <span class="nav-text">快速排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理解析-3"><span class="nav-number">2.4.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解题步骤-3"><span class="nav-number">2.4.2.</span> <span class="nav-text">解题步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现代码-3"><span class="nav-number">2.4.3.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆排序"><span class="nav-number">2.5.</span> <span class="nav-text">堆排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理解析-4"><span class="nav-number">2.5.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解题步骤-4"><span class="nav-number">2.5.2.</span> <span class="nav-text">解题步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现代码-4"><span class="nav-number">2.5.3.</span> <span class="nav-text">实现代码</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#希尔排序"><span class="nav-number">2.6.</span> <span class="nav-text">希尔排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原理解析-5"><span class="nav-number">2.6.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解题步骤-5"><span class="nav-number">2.6.2.</span> <span class="nav-text">解题步骤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实现代码-5"><span class="nav-number">2.6.3.</span> <span class="nav-text">实现代码</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/08/26/Swift实现常用排序算法总结/';
+          this.page.identifier = '2018/08/26/Swift实现常用排序算法总结/';
+          this.page.title = 'Swift实现常用排序算法总结';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
