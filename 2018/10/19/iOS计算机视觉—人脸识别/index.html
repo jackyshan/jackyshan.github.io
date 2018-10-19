@@ -1,0 +1,882 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="简介 引自维基百科计算机视觉是一门研究如何使机器“看”的科学，更进一步的说，就是指用摄影机和计算机代替人眼对目标进行识别、跟踪和测量等机器视觉，并进一步做图像处理，用计算机处理成为更适合人眼观察或传送给仪器检测的图像。  计算机视觉系统的结构形式很大程度上依赖于其具体应用方向。计算机视觉系统的具体实现方法同时也由其功能决定——是预先固定的抑或是在运行过程中自动学习调整。尽管如此，计算机视觉的都需">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS计算机视觉—人脸识别">
+<meta property="og:url" content="http://jackyshan.github.io/2018/10/19/iOS计算机视觉—人脸识别/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="简介 引自维基百科计算机视觉是一门研究如何使机器“看”的科学，更进一步的说，就是指用摄影机和计算机代替人眼对目标进行识别、跟踪和测量等机器视觉，并进一步做图像处理，用计算机处理成为更适合人眼观察或传送给仪器检测的图像。  计算机视觉系统的结构形式很大程度上依赖于其具体应用方向。计算机视觉系统的具体实现方法同时也由其功能决定——是预先固定的抑或是在运行过程中自动学习调整。尽管如此，计算机视觉的都需">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-a612654e8c23a83d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-393bcfa0afa4955b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-f02a58ab4c23659e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-9c5a532c8a2a7f70.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-2a36e6f061ff254d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-0d7481b971e23b0c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-29afb3f5fb6727d0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-afe8fe73d665c3f7.gif?imageMogr2/auto-orient/strip">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-bdd8c22856a81ede?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-10-19T14:42:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS计算机视觉—人脸识别">
+<meta name="twitter:description" content="简介 引自维基百科计算机视觉是一门研究如何使机器“看”的科学，更进一步的说，就是指用摄影机和计算机代替人眼对目标进行识别、跟踪和测量等机器视觉，并进一步做图像处理，用计算机处理成为更适合人眼观察或传送给仪器检测的图像。  计算机视觉系统的结构形式很大程度上依赖于其具体应用方向。计算机视觉系统的具体实现方法同时也由其功能决定——是预先固定的抑或是在运行过程中自动学习调整。尽管如此，计算机视觉的都需">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/301129-a612654e8c23a83d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/10/19/iOS计算机视觉—人脸识别/"/>
+
+
+
+
+
+  <title>iOS计算机视觉—人脸识别 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/10/19/iOS计算机视觉—人脸识别/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">iOS计算机视觉—人脸识别</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-19T22:41:50+08:00">
+                2018-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/19/iOS计算机视觉—人脸识别/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/10/19/iOS计算机视觉—人脸识别/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/301129-a612654e8c23a83d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89" target="_blank" rel="external">计算机视觉</a>是一门研究如何使机器“看”的科学，更进一步的说，就是指用摄影机和计算机代替人眼对目标进行识别、跟踪和测量等机器视觉，并进一步做图像处理，用计算机处理成为更适合人眼观察或传送给仪器检测的图像。</p>
+</blockquote>
+<p>计算机视觉系统的结构形式很大程度上依赖于其具体应用方向。计算机视觉系统的具体实现方法同时也由其功能决定——是预先固定的抑或是在运行过程中自动学习调整。尽管如此，计算机视觉的都需要具备以下处理步骤：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-393bcfa0afa4955b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<blockquote>
+<p>引自维基百科<a href="https://zh.wikipedia.org/wiki/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB" target="_blank" rel="external">人脸识别</a>，特指利用分析比较人脸视觉特征信息进行身份鉴别的计算机技术。<br>广义的人脸识别实际包括构建人脸识别系统的一系列相关技术，包括人脸图像采集、人脸定位、人脸识别预处理、身份确认以及身份查找等；而狭义的人脸识别特指通过人脸进行身份确认或者身份查找的技术或系统。</p>
+</blockquote>
+<p>人脸识别是计算机视觉的一种应用，iOS中常用的有四种实现方式：CoreImage、Vision、OpenCV、AVFoundation，下面一一介绍几种方式的实现步骤。</p>
+<h3 id="CoreImage"><a href="#CoreImage" class="headerlink" title="CoreImage"></a>CoreImage</h3><p>自从 iOS 5（大概在2011年左右）之后，iOS 开始支持人脸识别，只是用的人不多。人脸识别 API 让开发者不仅可以进行人脸检测，还能识别微笑、眨眼等表情。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-f02a58ab4c23659e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>操作部分：</p>
+<ul>
+<li>滤镜（CIFliter）：CIFilter 产生一个CIImage。典型的，接受一到多的图片作为输入，经过一些过滤操作，产生指定输出的图片。</li>
+<li>检测（CIDetector）：CIDetector 检测处理图片的特性，如使用来检测图片中人脸的眼睛、嘴巴、等等。</li>
+<li>特征（CIFeature）：CIFeature 代表由 detector处理后产生的特征。</li>
+</ul>
+<p>图像部分：</p>
+<ul>
+<li>画布（CIContext）：画布类可被用与处理Quartz 2D 或者 OpenGL。可以用它来关联CoreImage类。如滤镜、颜色等渲染处理。</li>
+<li>颜色（CIColor）： 图片的关联与画布、图片像素颜色的处理。</li>
+<li>向量（CIVector）： 图片的坐标向量等几何方法处理。</li>
+<li>图片（CIImage）： 代表一个图像，可代表关联后输出的图像。</li>
+</ul>
+<p>实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">guard let personciImage = CIImage(image: personPic.image!) else &#123; return &#125;</div><div class="line">let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyHigh]</div><div class="line">let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)</div><div class="line">let faces = faceDetector?.features(in: personciImage)</div><div class="line"></div><div class="line">// 转换坐标系</div><div class="line">let ciImageSize = personciImage.extent.size</div><div class="line">var transform = CGAffineTransform(scaleX: 1, y: -1)</div><div class="line">transform = transform.translatedBy(x: 0, y: -ciImageSize.height)</div><div class="line"></div><div class="line">for face in faces as! [CIFaceFeature] &#123;</div><div class="line">    print(&quot;Found bounds are \(face.bounds)&quot;)</div><div class="line">    // 应用变换转换坐标</div><div class="line">    var faceViewBounds = face.bounds.applying(transform)</div><div class="line">    // 在图像视图中计算矩形的实际位置和大小</div><div class="line">    let viewSize = personPic.bounds.size</div><div class="line">    let scale = min(viewSize.width / ciImageSize.width, viewSize.height / ciImageSize.height)</div><div class="line">    let offsetX = (viewSize.width - ciImageSize.width * scale) / 2</div><div class="line">    let offsetY = (viewSize.height - ciImageSize.height * scale) / 2</div><div class="line">    </div><div class="line">    faceViewBounds = faceViewBounds.applying(CGAffineTransform(scaleX: scale, y: scale))</div><div class="line">    faceViewBounds.origin.x += offsetX</div><div class="line">    faceViewBounds.origin.y += offsetY</div><div class="line">    </div><div class="line">    let faceBox = UIView(frame: faceViewBounds)</div><div class="line">    faceBox.layer.borderWidth = 3</div><div class="line">    faceBox.layer.borderColor = UIColor.red.cgColor</div><div class="line">    faceBox.backgroundColor = UIColor.clear</div><div class="line">    personPic.addSubview(faceBox)</div><div class="line">    </div><div class="line">    if face.hasLeftEyePosition &#123;</div><div class="line">        print(&quot;Left eye bounds are \(face.leftEyePosition)&quot;)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if face.hasRightEyePosition &#123;</div><div class="line">        print(&quot;Right eye bounds are \(face.rightEyePosition)&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行APP，效果如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-9c5a532c8a2a7f70.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="Vision"><a href="#Vision" class="headerlink" title="Vision"></a>Vision</h3><p>Vision 是 Apple 在 WWDC 2017 推出的图像识别框架，它基于 Core ML，所以可以理解成 Apple 的工程师设计了一种算法模型，然后利用 Core ML 训练，最后整合成一个新的框架，相比开源模型然后让开发者自己整合起来，这种方式更安全也更方便我们使用。</p>
+<p>Vision 支持多种图片类型，如：</p>
+<ul>
+<li>CIImage</li>
+<li>NSURL</li>
+<li>NSData</li>
+<li>CGImageRef</li>
+<li>CVPixelBufferRef</li>
+</ul>
+<p>Vision使用中的角色有：<br>Request，RequestHandler，results和results中的Observation数组。</p>
+<p>Request类型：<br>有很多种，比如图中列出的 人脸识别、特征识别、文本识别、二维码识别等。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-2a36e6f061ff254d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>使用概述：</p>
+<p>我们在使用过程中是给各种功能的 Request 提供给一个 RequestHandler，Handler 持有需要识别的图片信息，并将处理结果分发给每个 Request 的 completion Block 中。可以从 results 属性中得到 Observation 数组。</p>
+<p>observations数组中的内容根据不同的request请求返回了不同的observation，如：VNFaceObservation、VNTextObservation、VNBarcodeObservation、VNHorizonObservation，不同的Observation都继承于VNDetectedObjectObservation，而VNDetectedObjectObservation则是继承于VNObservation。每种Observation有boundingBox，landmarks等属性，存储的是识别后物体的坐标，点位等，我们拿到坐标后，就可以进行一些UI绘制。</p>
+<p>代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">@IBOutlet weak var imageView: UIImageView!</div><div class="line"></div><div class="line">override func viewDidLoad() &#123;</div><div class="line">    super.viewDidLoad()</div><div class="line">    // Do any additional setup after loading the view, typically from a nib.</div><div class="line">    </div><div class="line">    let handler = VNImageRequestHandler.init(cgImage: (imageView.image?.cgImage!)!, orientation: CGImagePropertyOrientation.up)</div><div class="line">    let request = reqReq()</div><div class="line">    </div><div class="line">    DispatchQueue.global(qos: .userInteractive).async &#123;</div><div class="line">        do &#123;</div><div class="line">            try handler.perform([request])</div><div class="line">        &#125;</div><div class="line">        catch &#123;</div><div class="line">            print(&quot;e&quot;)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">func reqReq() -&gt; VNDetectFaceRectanglesRequest &#123;</div><div class="line">    let request = VNDetectFaceRectanglesRequest(completionHandler: &#123; (request, error) in</div><div class="line">        </div><div class="line">        DispatchQueue.main.async &#123;</div><div class="line">            </div><div class="line">            if let result = request.results &#123;</div><div class="line">                </div><div class="line">                let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -self.imageView!.frame.size.height)</div><div class="line">                let translate = CGAffineTransform.identity.scaledBy(x: self.imageView!.frame.size.width, y: self.imageView!.frame.size.height)</div><div class="line">                </div><div class="line">                //遍历所有识别结果</div><div class="line">                for item in result &#123;</div><div class="line">                    </div><div class="line">                    //标注框</div><div class="line">                    let faceRect = UIView(frame: CGRect.zero)</div><div class="line">                    faceRect.layer.borderWidth = 3</div><div class="line">                    faceRect.layer.borderColor = UIColor.red.cgColor</div><div class="line">                    faceRect.backgroundColor = UIColor.clear</div><div class="line">                    </div><div class="line">                    self.imageView!.addSubview(faceRect)</div><div class="line">                    </div><div class="line">                    if let faceObservation = item as? VNFaceObservation &#123;</div><div class="line">                        </div><div class="line">                        let finalRect = faceObservation.boundingBox.applying(translate).applying(transform)</div><div class="line">                        faceRect.frame = finalRect</div><div class="line">                        </div><div class="line">                    &#125;</div><div class="line">                    </div><div class="line">                &#125;</div><div class="line">                </div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        </div><div class="line">    &#125;)</div><div class="line">    </div><div class="line">    return request</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行APP，效果如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-0d7481b971e23b0c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="OpenCV"><a href="#OpenCV" class="headerlink" title="OpenCV"></a>OpenCV</h3><p>OpenCV (Open Source Computer Vision Library)是一个在BSD许可下发布的开源库，因此它是免费提供给学术和商业用途。有C++、C、Python和Java接口，支持Windows、Linux、MacOS、iOS和Android等系统。OpenCV是为计算效率而设计的，而且密切关注实时应用程序的发展和支持。该库用优化的C/C++编写,可以应用于多核处理。在启用OpenCL的基础上，它可以利用底层的异构计算平台的硬件加速。</p>
+<p>OpenCV 起始于 1999 年 Intel 的一个内部研究项目。从那时起，它的开发就一直很活跃。进化到现在，它已支持如 OpenCL 和 OpenGL 等现代技术，也支持如 iOS 和 Android 等平台。</p>
+<p>下面是在<a href="http://docs.opencv.org/modules/core/doc/intro.html" target="_blank" rel="external">官方文档</a>中列出的最重要的模块：</p>
+<ul>
+<li><strong>core</strong>：简洁的核心模块，定义了基本的数据结构，包括稠密多维数组 <code>Mat</code> 和其他模块需要的基本函数。</li>
+<li><strong>imgproc</strong>：图像处理模块，包括线性和非线性图像滤波、几何图像转换 (缩放、仿射与透视变换、一般性基于表的重映射)、颜色空间转换、直方图等等。</li>
+<li><strong>video</strong>：视频分析模块，包括运动估计、背景消除、物体跟踪算法。</li>
+<li><strong>calib3d</strong>：包括基本的多视角几何算法、单体和立体相机的标定、对象姿态估计、双目立体匹配算法和元素的三维重建。</li>
+<li><strong>features2d</strong>：包含了显著特征检测算法、描述算子和算子匹配算法。</li>
+<li><strong>objdetect</strong>：物体检测和一些预定义的物体的检测 (如人脸、眼睛、杯子、人、汽车等)。</li>
+<li><strong>ml</strong>：多种机器学习算法，如 K 均值、支持向量机和神经网络。</li>
+<li><strong>highgui</strong>：一个简单易用的接口，提供视频捕捉、图像和视频编码等功能，还有简单的 UI 接口 (iOS 上可用的仅是其一个子集)。</li>
+<li><strong>gpu</strong>：OpenCV 中不同模块的 GPU 加速算法 (iOS 上不可用)。</li>
+<li><strong>ocl</strong>：使用 OpenCL 实现的通用算法 (iOS 上不可用)。</li>
+<li>一些其它辅助模块，如 Python 绑定和用户贡献的算法。</li>
+</ul>
+<p>cv::Mat 是 OpenCV 的核心数据结构，用来表示任意 N 维矩阵。因为图像只是 2 维矩阵的一个特殊场景，所以也是使用 cv::Mat 来表示的。也就是说，cv::Mat 将是你在 OpenCV 中用到最多的类。</p>
+<p>如前面所说，OpenCV 是一个 C++ 的 API，因此不能直接在 Swift 和 Objective-C 代码中使用，但能在 Objective-C++ 文件中使用。</p>
+<p>Objective-C++ 是 Objective-C 和 C++ 的混合物，让你可以在 Objective-C 类中使用 C++ 对象。clang 编译器会把所有后缀名为 <code>.mm</code> 的文件都当做是 Objective-C++。一般来说，它会如你所期望的那样运行，但还是有一些使用 Objective-C++ 的注意事项。内存管理是你最应该格外注意的点，因为 ARC 只对 Objective-C 对象有效。当你使用一个 C++ 对象作为类属性的时候，其唯一有效的属性就是 <code>assign</code>。因此，你的 <code>dealloc</code> 函数应确保 C++ 对象被正确地释放了。</p>
+<p>第二重要的点就是，如果你在 Objective-C++ 头文件中引入了 C++ 头文件，当你在工程中使用该 Objective-C++ 文件的时候就泄露了 C++ 的依赖。任何引入你的 Objective-C++ 类的 Objective-C 类也会引入该 C++ 类，因此该 Objective-C 文件也要被声明为 Objective-C++ 的文件。这会像森林大火一样在工程中迅速蔓延。所以，应该把你引入 C++ 文件的地方都用 <code>#ifdef __cplusplus</code> 包起来，并且只要可能，就尽量只在 <code>.mm</code>实现文件中引入 C++ 头文件。</p>
+<p>要获得更多如何混用 C++ 和 Objective-C 的细节，请查看 <a href="https://twitter.com/mattjgalloway" target="_blank" rel="external">Matt Galloway</a> 写的<a href="http://www.raywenderlich.com/62989/introduction-c-ios-developers-part-1" target="_blank" rel="external">这篇教程</a>。</p>
+<p>基于OpenCV，iOS应用程序可以实现很多有趣的功能，也可以把很多复杂的工作简单化。一般可用于：</p>
+<ul>
+<li>对图片进行灰度处理</li>
+<li>人脸识别，即特征跟踪</li>
+<li>训练图片特征库（可用于模式识别）</li>
+<li>提取特定图像内容（根据需求还原有用图像信息）</li>
+</ul>
+<p>代码实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line">    </div><div class="line">    //预设置face探测的参数</div><div class="line">    [self preSetFace];</div><div class="line">    </div><div class="line">    //image转mat</div><div class="line">    cv::Mat mat;</div><div class="line">    UIImageToMat(self.imageView.image, mat);</div><div class="line">    </div><div class="line">    //执行face</div><div class="line">    [self processImage:mat];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)preSetFace &#123;</div><div class="line">    NSString *faceCascadePath = [[NSBundle mainBundle] pathForResource:@&quot;haarcascade_frontalface_alt2&quot;</div><div class="line">                                                                ofType:@&quot;xml&quot;];</div><div class="line">    </div><div class="line">    const CFIndex CASCADE_NAME_LEN = 2048;</div><div class="line">    char *CASCADE_NAME = (char *) malloc(CASCADE_NAME_LEN);</div><div class="line">    CFStringGetFileSystemRepresentation( (CFStringRef)faceCascadePath, CASCADE_NAME, CASCADE_NAME_LEN);</div><div class="line">    </div><div class="line">    _faceDetector.load(CASCADE_NAME);</div><div class="line">    </div><div class="line">    free(CASCADE_NAME);</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)processImage:(cv::Mat&amp;)inputImage &#123;</div><div class="line">    // Do some OpenCV stuff with the image</div><div class="line">    cv::Mat frame_gray;</div><div class="line"></div><div class="line">    //转换为灰度图像</div><div class="line">    cv::cvtColor(inputImage, frame_gray, CV_BGR2GRAY);</div><div class="line">    </div><div class="line">    //图像均衡化</div><div class="line">    cv::equalizeHist(frame_gray, frame_gray);</div><div class="line"></div><div class="line">    //分类器识别</div><div class="line">    _faceDetector.detectMultiScale(frame_gray, _faceRects,1.1,2,0,cv::Size(30,30));</div><div class="line"></div><div class="line">    vector&lt;cv::Rect&gt; faces;</div><div class="line">    faces = _faceRects;</div><div class="line">    </div><div class="line">    // 在每个人脸上画一个红色四方形</div><div class="line">    for(unsigned int i= 0;i &lt; faces.size();i++)</div><div class="line">    &#123;</div><div class="line">        const cv::Rect&amp; face = faces[i];</div><div class="line">        cv::Point tl(face.x,face.y);</div><div class="line">        cv::Point br = tl + cv::Point(face.width,face.height);</div><div class="line">        // 四方形的画法</div><div class="line">        cv::Scalar magenta = cv::Scalar(255, 0, 0, 255);</div><div class="line">        cv::rectangle(inputImage, tl, br, magenta, 3, 8, 0);</div><div class="line">    &#125;</div><div class="line">    UIImage *outputImage = MatToUIImage(inputImage);</div><div class="line">    self.imageView.image = outputImage;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行APP，效果如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-29afb3f5fb6727d0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="AVFoundation"><a href="#AVFoundation" class="headerlink" title="AVFoundation"></a>AVFoundation</h3><p>AVFoundation照片和视频捕捉功能是从框架搭建之初就是它的强项。 从iOS 4.0 我们就可以直接访问iOS的摄像头和摄像头生成的数据（照片、视频）。目前捕捉功能仍然是苹果公司媒体工程师最关注的领域。 </p>
+<p>AVFoundation实现视频捕捉的步骤如下：</p>
+<ul>
+<li>捕捉设备</li>
+</ul>
+<p>AVCaptureDevice为摄像头、麦克风等物理设备提供接口。大部分我们使用的设备都是内置于MAC或者iPhone、iPad上的。当然也可能出现外部设备。但是AVCaptureDevice 针对物理设备提供了大量的控制方法。比如控制摄像头聚焦、曝光、白平衡、闪光灯等。</p>
+<ul>
+<li>捕捉设备的输入</li>
+</ul>
+<p>注意：为捕捉设备添加输入，不能添加到AVCaptureSession 中，必须通过将它封装到一个AVCaptureDeviceInputs实例中。这个对象在设备输出数据和捕捉会话间扮演接线板的作用。</p>
+<ul>
+<li>捕捉设备的输出</li>
+</ul>
+<p>AVCaptureOutput 是一个抽象类。用于为捕捉会话得到的数据寻找输出的目的地。框架定义了一些抽象类的高级扩展类。例如 AVCaptureStillImageOutput 和 AVCaptureMovieFileOutput类。使用它们来捕捉静态照片、视频。例如 AVCaptureAudioDataOutput 和 AVCaptureVideoDataOutput ,使用它们来直接访问硬件捕捉到的数字样本。</p>
+<ul>
+<li>捕捉连接</li>
+</ul>
+<p>AVCaptureConnection类.捕捉会话先确定由给定捕捉设备输入渲染的媒体类型，并自动建立其到能够接收该媒体类型的捕捉输出端的连接。</p>
+<ul>
+<li>捕捉预览</li>
+</ul>
+<p>如果不能在影像捕捉中看到正在捕捉的场景，那么应用程序用户体验就会很差。幸运的是框架定义了AVCaptureVideoPreviewLayer 类来满足该需求。这样就可以对捕捉的数据进行实时预览。</p>
+<hr>
+<p>通过一个特定的AVCaptureOutput类型的AVCaptureMetadataOutput可以实现人脸检测功能.支持硬件加速以及同时对10个人脸进行实时检测.</p>
+<p>当使用人脸检测时,会输出一个具体的子类类型AVMetadataFaceObject,该类型定义了多个用于描述被检测到的人脸的属性,包括人脸的边界(设备坐标系),以及斜倾角(roll angle,表示人头部向肩膀方向的侧倾角度)和偏转角(yaw angle,表示人脸绕Y轴旋转的角度).</p>
+<p>实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div></pre></td><td class="code"><pre><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line">    </div><div class="line">    _facesViewArr = [NSMutableArray arrayWithCapacity:0];</div><div class="line">    </div><div class="line">    //1.获取输入设备（摄像头）</div><div class="line">    NSArray *devices = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera] mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack].devices;</div><div class="line">    AVCaptureDevice *deviceF = devices[0];</div><div class="line">    </div><div class="line">//    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];</div><div class="line">//    AVCaptureDevice *deviceF;</div><div class="line">//    for (AVCaptureDevice *device in devices )</div><div class="line">//    &#123;</div><div class="line">//        if ( device.position == AVCaptureDevicePositionFront )</div><div class="line">//        &#123;</div><div class="line">//            deviceF = device;</div><div class="line">//            break;</div><div class="line">//        &#125;</div><div class="line">//    &#125;</div><div class="line">    </div><div class="line">    //2.根据输入设备创建输入对象</div><div class="line">    AVCaptureDeviceInput*input = [[AVCaptureDeviceInput alloc] initWithDevice:deviceF error:nil];</div><div class="line">    </div><div class="line">    //3.创建原数据的输出对象</div><div class="line">    AVCaptureMetadataOutput *metaout = [[AVCaptureMetadataOutput alloc] init];</div><div class="line">    </div><div class="line">    //4.设置代理监听输出对象输出的数据，在主线程中刷新</div><div class="line">    [metaout setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];</div><div class="line">    </div><div class="line">    self.session = [[AVCaptureSession alloc] init];</div><div class="line">    </div><div class="line">    //5.设置输出质量(高像素输出)</div><div class="line">    if ([self.session canSetSessionPreset:AVCaptureSessionPreset640x480]) &#123;</div><div class="line">        [self.session setSessionPreset:AVCaptureSessionPreset640x480];</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //6.添加输入和输出到会话</div><div class="line">    [self.session beginConfiguration];</div><div class="line">    if ([self.session canAddInput:input]) &#123;</div><div class="line">        [self.session addInput:input];</div><div class="line">    &#125;</div><div class="line">    if ([self.session canAddOutput:metaout]) &#123;</div><div class="line">        [self.session addOutput:metaout];</div><div class="line">    &#125;</div><div class="line">    [self.session commitConfiguration];</div><div class="line">    </div><div class="line">    //7.告诉输出对象要输出什么样的数据,识别人脸, 最多可识别10张人脸</div><div class="line">    [metaout setMetadataObjectTypes:@[AVMetadataObjectTypeFace]];</div><div class="line">    </div><div class="line">    AVCaptureSession *session = (AVCaptureSession *)self.session;</div><div class="line">    </div><div class="line">    //8.创建预览图层</div><div class="line">    _previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];</div><div class="line">    _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;</div><div class="line">    _previewLayer.frame = self.view.bounds;</div><div class="line">    [self.view.layer insertSublayer:_previewLayer atIndex:0];</div><div class="line">    </div><div class="line">    //9.设置有效扫描区域(默认整个屏幕区域)（每个取值0~1, 以屏幕右上角为坐标原点）</div><div class="line">    metaout.rectOfInterest = self.view.bounds;</div><div class="line">    </div><div class="line">    //前置摄像头一定要设置一下 要不然画面是镜像</div><div class="line">    for (AVCaptureVideoDataOutput* output in session.outputs) &#123;</div><div class="line">        for (AVCaptureConnection * av in output.connections) &#123;</div><div class="line">            //判断是否是前置摄像头状态</div><div class="line">            if (av.supportsVideoMirroring) &#123;</div><div class="line">                //镜像设置</div><div class="line">                av.videoOrientation = AVCaptureVideoOrientationPortrait;</div><div class="line">//                av.videoMirrored = YES;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //10. 开始扫描</div><div class="line">    [self.session startRunning];</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray&lt;__kindof AVMetadataObject *&gt; *)metadataObjects fromConnection:(AVCaptureConnection *)connection</div><div class="line">&#123;</div><div class="line">    //当检测到了人脸会走这个回调</div><div class="line">    </div><div class="line">    //干掉旧画框</div><div class="line">    for (UIView *faceView in self.facesViewArr) &#123;</div><div class="line">        [faceView removeFromSuperview];</div><div class="line">    &#125;</div><div class="line">    [self.facesViewArr removeAllObjects];</div><div class="line">    </div><div class="line">    //转换</div><div class="line">    for (AVMetadataFaceObject *faceobject in metadataObjects) &#123;</div><div class="line">        AVMetadataObject *face = [self.previewLayer transformedMetadataObjectForMetadataObject:faceobject];</div><div class="line">        CGRect r = face.bounds;</div><div class="line">        //画框</div><div class="line">        UIView *faceBox = [[UIView alloc] initWithFrame:r];</div><div class="line">        faceBox.layer.borderWidth = 3;</div><div class="line">        faceBox.layer.borderColor = [UIColor redColor].CGColor;</div><div class="line">        faceBox.backgroundColor = [UIColor clearColor];</div><div class="line">        [self.view addSubview:faceBox];</div><div class="line">        [self.facesViewArr addObject:faceBox];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行APP，效果如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/301129-afe8fe73d665c3f7.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<p>本文四种方式实现的代码已放到<a href="https://github.com/jackyshan/iOSFaceDetect" target="_blank" rel="external">Github</a>，有需要的可以下载查看。</p>
+<h3 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h3><p>欢迎关注公众号：jackyshan，技术干货首发微信，第一时间推送。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-bdd8c22856a81ede?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/19/iOS中WKWebView和Native交互/" rel="next" title="iOS中WKWebView和Native交互">
+                <i class="fa fa-chevron-left"></i> iOS中WKWebView和Native交互
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/19/iOS中对瀑布流实现适配器方案/" rel="prev" title="iOS中对瀑布流实现适配器方案">
+                iOS中对瀑布流实现适配器方案 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a7c14cb6fb9a0635d0c0c4f/posts" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CoreImage"><span class="nav-number">2.</span> <span class="nav-text">CoreImage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vision"><span class="nav-number">3.</span> <span class="nav-text">Vision</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenCV"><span class="nav-number">4.</span> <span class="nav-text">OpenCV</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AVFoundation"><span class="nav-number">5.</span> <span class="nav-text">AVFoundation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关注我"><span class="nav-number">6.</span> <span class="nav-text">关注我</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/10/19/iOS计算机视觉—人脸识别/';
+          this.page.identifier = '2018/10/19/iOS计算机视觉—人脸识别/';
+          this.page.title = 'iOS计算机视觉—人脸识别';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

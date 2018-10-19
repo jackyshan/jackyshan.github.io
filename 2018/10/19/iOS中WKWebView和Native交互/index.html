@@ -1,0 +1,830 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="前言了解本文之前需要准备JS和WebView的一些基础知识，需要知道JS的基本语法和WebView调用JS的常用接口。 iOS实现JS和Native交互的WebView有UIWebView和WKWebView。通过KVC拿到UIWebView的JSContext，通过JSContext实现交互。WKWebView有了新特性MessageHandler来实现JS调用原生方法。从实现思路是来讲，UI">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS中WKWebView和Native交互">
+<meta property="og:url" content="http://jackyshan.github.io/2018/10/19/iOS中WKWebView和Native交互/index.html">
+<meta property="og:site_name" content="jacky&#39;s blog">
+<meta property="og:description" content="前言了解本文之前需要准备JS和WebView的一些基础知识，需要知道JS的基本语法和WebView调用JS的常用接口。 iOS实现JS和Native交互的WebView有UIWebView和WKWebView。通过KVC拿到UIWebView的JSContext，通过JSContext实现交互。WKWebView有了新特性MessageHandler来实现JS调用原生方法。从实现思路是来讲，UI">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/301129-344ab1bc20f34a02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/301129-bdd8c22856a81ede?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-10-19T14:41:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS中WKWebView和Native交互">
+<meta name="twitter:description" content="前言了解本文之前需要准备JS和WebView的一些基础知识，需要知道JS的基本语法和WebView调用JS的常用接口。 iOS实现JS和Native交互的WebView有UIWebView和WKWebView。通过KVC拿到UIWebView的JSContext，通过JSContext实现交互。WKWebView有了新特性MessageHandler来实现JS调用原生方法。从实现思路是来讲，UI">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/301129-344ab1bc20f34a02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://jackyshan.github.io/2018/10/19/iOS中WKWebView和Native交互/"/>
+
+
+
+
+
+  <title>iOS中WKWebView和Native交互 | jacky's blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">jacky's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">宁静致远</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://jackyshan.github.io/2018/10/19/iOS中WKWebView和Native交互/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="jacky">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jacky's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">iOS中WKWebView和Native交互</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-19T22:41:21+08:00">
+                2018-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/10/19/iOS中WKWebView和Native交互/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/10/19/iOS中WKWebView和Native交互/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/301129-344ab1bc20f34a02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>了解本文之前需要准备JS和WebView的一些基础知识，需要知道JS的基本语法和WebView调用JS的常用接口。</p>
+<p>iOS实现JS和Native交互的WebView有UIWebView和WKWebView。通过KVC拿到UIWebView的JSContext，通过JSContext实现交互。<br>WKWebView有了新特性MessageHandler来实现JS调用原生方法。从实现思路是来讲，UIWebView和WKWebView是一样的。<br>所以，本文只介绍WKWebView上JS和Native的交互思路，UIWebView有需求的可以模仿实现。</p>
+<h3 id="JS和Native交互常用的场景"><a href="#JS和Native交互常用的场景" class="headerlink" title="JS和Native交互常用的场景"></a>JS和Native交互常用的场景</h3><p>常用的分为下面几种场景：</p>
+<ul>
+<li><p>H5获取Native用户信息（这种比较简单，只需要Native注入JS就行了，思路有三种下面介绍）</p>
+</li>
+<li><p>H5传递信息给Native，调用Native分享（这种属于JS调用Native）</p>
+</li>
+<li><p>Native告诉H5分享结果（这种属于Native调用JS）</p>
+</li>
+</ul>
+<p>下面一一介绍，实现如下：</p>
+<h4 id="H5获取Native用户信息"><a href="#H5获取Native用户信息" class="headerlink" title="H5获取Native用户信息"></a>H5获取Native用户信息</h4><p>现有用户信息格式如下，需要注入到JS，供H5调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">let userInfo = [&quot;name&quot;: &quot;wb&quot;, &quot;sex&quot;: &quot;male&quot;, &quot;phone&quot;: &quot;12333434&quot;]</div></pre></td></tr></table></figure>
+<h5 id="注入JS变量"><a href="#注入JS变量" class="headerlink" title="注入JS变量"></a>注入JS变量</h5><p>Native注入JS变量实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">let userContent = WKUserContentController.init()</div><div class="line"></div><div class="line">let userInfo = [&quot;name&quot;: &quot;wb&quot;, &quot;sex&quot;: &quot;male&quot;, &quot;phone&quot;: &quot;12333434&quot;]</div><div class="line">for key in userInfo.keys &#123;</div><div class="line">    let script = WKUserScript.init(source: &quot;var \(key) = \&quot;\(userInfo[key]!)\&quot;&quot;, injectionTime: .atDocumentStart, forMainFrameOnly: true)</div><div class="line">    userContent.addUserScript(script)</div><div class="line">&#125;</div><div class="line"></div><div class="line">let config = WKWebViewConfiguration.init()</div><div class="line">config.userContentController = userContent</div><div class="line"></div><div class="line">let wkWebView: WKWebView = WKWebView.init(frame: UIScreen.main.bounds, configuration: config)</div><div class="line">wkWebView.navigationDelegate = self</div><div class="line">wkWebView.uiDelegate = self</div><div class="line">view.addSubview(wkWebView)</div><div class="line">view.insertSubview(wkWebView, at: 0)</div><div class="line">wkWebView.load(URLRequest.init(url: URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!))</div></pre></td></tr></table></figure>
+<p>通过遍历userInfo的keys，把key作为变量，value作为String值，注入到JS上下文中。</p>
+<p>在H5中实现调用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;js Bridge demo&lt;/title&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    function btnClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            alert(name)</div><div class="line">            alert(sex)</div><div class="line">            alert(phone)</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">    &lt;h1&gt;js demo test&lt;/h1&gt;</div><div class="line">    &lt;p style=&quot;text-align: center;&quot;&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;btnClick()&quot; style=&quot;font-size: 100px;&quot;&gt;test JS&lt;/button&gt;</div><div class="line">    &lt;/p&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h5 id="注入JS对象"><a href="#注入JS对象" class="headerlink" title="注入JS对象"></a>注入JS对象</h5><p>Native注入JS对象实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">let userContent = WKUserContentController.init()</div><div class="line"></div><div class="line">let userInfo = [&quot;name&quot;: &quot;wb&quot;, &quot;sex&quot;: &quot;male&quot;, &quot;phone&quot;: &quot;12333434&quot;]</div><div class="line">let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted)</div><div class="line">let jsonText = String.init(data: jsonData!, encoding: String.Encoding.utf8)</div><div class="line"></div><div class="line">let script = WKUserScript.init(source: &quot;var userInfo = \(jsonText!)&quot;, injectionTime: .atDocumentStart, forMainFrameOnly: true)</div><div class="line">userContent.addUserScript(script)</div><div class="line">let config = WKWebViewConfiguration.init()</div><div class="line">config.userContentController = userContent</div><div class="line"></div><div class="line">let wkWebView: WKWebView = WKWebView.init(frame: UIScreen.main.bounds, configuration: config)</div><div class="line">wkWebView.navigationDelegate = self</div><div class="line">wkWebView.uiDelegate = self</div><div class="line">view.addSubview(wkWebView)</div><div class="line">view.insertSubview(wkWebView, at: 0)</div><div class="line">wkWebView.load(URLRequest.init(url: URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!))</div></pre></td></tr></table></figure>
+<p>通过把userInfo字典转化成json，作为对象赋值给userInfo，注入JS上下文中。</p>
+<p>在H5中实现调用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;js Bridge demo&lt;/title&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    function btnClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            alert(JSON.stringify(userInfo))</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">    &lt;h1&gt;js demo test&lt;/h1&gt;</div><div class="line">    &lt;p style=&quot;text-align: center;&quot;&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;btnClick()&quot; style=&quot;font-size: 100px;&quot;&gt;test JS&lt;/button&gt;</div><div class="line">    &lt;/p&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h5 id="注入JS函数"><a href="#注入JS函数" class="headerlink" title="注入JS函数"></a>注入JS函数</h5><p>Native注入JS函数实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">let userContent = WKUserContentController.init()</div><div class="line"></div><div class="line">let userInfo = [&quot;name&quot;: &quot;wb&quot;, &quot;sex&quot;: &quot;male&quot;, &quot;phone&quot;: &quot;12333434&quot;]</div><div class="line">let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted)</div><div class="line">let jsonText = String.init(data: jsonData!, encoding: String.Encoding.utf8)</div><div class="line"></div><div class="line">let script = WKUserScript.init(source: &quot;var iOSApp = &#123;\&quot;getUserInfo\&quot;:function()&#123;return \(jsonText!)&#125;&#125;&quot;, injectionTime: .atDocumentStart, forMainFrameOnly: true)</div><div class="line">userContent.addUserScript(script)</div><div class="line">let config = WKWebViewConfiguration.init()</div><div class="line">config.userContentController = userContent</div><div class="line"></div><div class="line">let wkWebView: WKWebView = WKWebView.init(frame: UIScreen.main.bounds, configuration: config)</div><div class="line">wkWebView.navigationDelegate = self</div><div class="line">wkWebView.uiDelegate = self</div><div class="line">view.addSubview(wkWebView)</div><div class="line">view.insertSubview(wkWebView, at: 0)</div><div class="line">wkWebView.load(URLRequest.init(url: URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!))</div></pre></td></tr></table></figure>
+<p>通过封装getUserInfo匿名函数，执行函数return我们的对象，生成全局对象iOSApp，调用<code>iOSApp.getUserInfo()</code>。<br>这样写的好处是，我们的H5在调用函数的时候，可以很容易知道哪些是原生注入，防止和本地造成冲突，便于理解。</p>
+<p>在H5中实现调用如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;js Bridge demo&lt;/title&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    function btnClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            alert(JSON.stringify(iOSApp.getUserInfo()))</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">    &lt;h1&gt;js demo test&lt;/h1&gt;</div><div class="line">    &lt;p style=&quot;text-align: center;&quot;&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;btnClick()&quot; style=&quot;font-size: 100px;&quot;&gt;test JS&lt;/button&gt;</div><div class="line">    &lt;/p&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>以上讲了三种方式实现用户信息的传递，都是通过WKUserContentController注入JS实现的，实际上我也可以通过WebView的evaluateJavaScript方法实现注入。</p>
+<h5 id="evaluateJavaScript实现注入"><a href="#evaluateJavaScript实现注入" class="headerlink" title="evaluateJavaScript实现注入"></a>evaluateJavaScript实现注入</h5><p>同样的WebView的调用H5，提供了evaluateJavaScript接口，此接口既可以执行JS函数回调结果，也可以注入JS。</p>
+<p>下面使用接口实现JS函数的注入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">let userContent = WKUserContentController.init()</div><div class="line">let config = WKWebViewConfiguration.init()</div><div class="line">config.userContentController = userContent</div><div class="line"></div><div class="line">let wkWebView: WKWebView = WKWebView.init(frame: UIScreen.main.bounds, configuration: config)</div><div class="line">wkWebView.navigationDelegate = self</div><div class="line">wkWebView.uiDelegate = self</div><div class="line">view.addSubview(wkWebView)</div><div class="line">view.insertSubview(wkWebView, at: 0)</div><div class="line">wkWebView.load(URLRequest.init(url: URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!))</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line">//代理方法加载完成</div><div class="line">func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) &#123;</div><div class="line">    let userInfo = [&quot;name&quot;: &quot;wb&quot;, &quot;sex&quot;: &quot;male&quot;, &quot;phone&quot;: &quot;12333434&quot;]</div><div class="line">    let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted)</div><div class="line">    let jsonText = String.init(data: jsonData!, encoding: String.Encoding.utf8)</div><div class="line"></div><div class="line">    webView.evaluateJavaScript(&quot;var iOSApp = &#123;\&quot;getUserInfo\&quot;:function()&#123;return \(jsonText!)&#125;&#125;&quot;, completionHandler: nil)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在WebView加载完成之后，使用evaluateJavaScript实现了JS函数的注入，H5实现调用正常。</p>
+<h4 id="H5传递信息给Native，调用Native分享"><a href="#H5传递信息给Native，调用Native分享" class="headerlink" title="H5传递信息给Native，调用Native分享"></a>H5传递信息给Native，调用Native分享</h4><p>很多时候H5需要传递信息给我们的Native，我们Native再执行相应的逻辑。</p>
+<p>Native实现代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">let userContent = WKUserContentController.init()</div><div class="line">userContent.add(self, name: &quot;shareAction&quot;)</div><div class="line">let config = WKWebViewConfiguration.init()</div><div class="line">config.userContentController = userContent</div><div class="line"></div><div class="line">let wkWebView: WKWebView = WKWebView.init(frame: UIScreen.main.bounds, configuration: config)</div><div class="line">wkWebView.navigationDelegate = self</div><div class="line">wkWebView.uiDelegate = self</div><div class="line">view.addSubview(wkWebView)</div><div class="line">view.insertSubview(wkWebView, at: 0)</div><div class="line">wkWebView.load(URLRequest.init(url: URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!))</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line">//代理方法，window.webkit.messageHandlers.xxx.postMessage(xxx)实现发送到这里</div><div class="line">func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) &#123;</div><div class="line">    print(message.body)</div><div class="line">    print(message.name)</div><div class="line">    print(message.frameInfo.request)</div><div class="line">    </div><div class="line">    if message.name == &quot;shareAction&quot; &#123;</div><div class="line">        let list = message.body as! [String: String]</div><div class="line">        print(list[&quot;title&quot;]!)</div><div class="line">        print(list[&quot;content&quot;]!)</div><div class="line">        print(list[&quot;url&quot;]!)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>userContent.add(self, name: &quot;shareAction&quot;)</code>本地添加shareAction的接口声明，当JS调用shareAction回调代理方法，实现参数捕获(WKScriptMessage)。<br>这样我们本地就得到了分享的传参了，然后可以调用本地SDK实现分享的逻辑了。</p>
+<p>H5实现代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;js Bridge demo&lt;/title&gt;</div><div class="line">    &lt;meta charset=&quot;utf-8&quot;&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    function btnClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            window.webkit.messageHandlers.shareAction.postMessage(&#123;&quot;title&quot;:&quot;分享&quot;, &quot;content&quot;:&quot;内容&quot;, &quot;url&quot;:&quot;链接&quot;&#125;)</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">    &lt;h1&gt;js demo test&lt;/h1&gt;</div><div class="line">    &lt;p style=&quot;text-align: center;&quot;&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;btnClick()&quot; style=&quot;font-size: 100px;&quot;&gt;test JS&lt;/button&gt;</div><div class="line">    &lt;/p&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h4 id="Native告诉H5分享结果"><a href="#Native告诉H5分享结果" class="headerlink" title="Native告诉H5分享结果"></a>Native告诉H5分享结果</h4><p>上面实现了JS传参数给Native，但是Native怎么告诉H5分享结果呢，下面是实现逻辑。</p>
+<p>Native实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">let userContent = WKUserContentController.init()</div><div class="line">userContent.add(self, name: &quot;shareAction&quot;)</div><div class="line">let config = WKWebViewConfiguration.init()</div><div class="line">config.userContentController = userContent</div><div class="line"></div><div class="line">let wkWebView: WKWebView = WKWebView.init(frame: UIScreen.main.bounds, configuration: config)</div><div class="line">wkWebView.navigationDelegate = self</div><div class="line">wkWebView.uiDelegate = self</div><div class="line">view.addSubview(wkWebView)</div><div class="line">view.insertSubview(wkWebView, at: 0)</div><div class="line">wkWebView.load(URLRequest.init(url: URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!))</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line">//代理方法，window.webkit.messageHandlers.xxx.postMessage(xxx)实现发送到这里</div><div class="line">func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) &#123;</div><div class="line">    print(message.body)</div><div class="line">    print(message.name)</div><div class="line">    print(message.frameInfo.request)</div><div class="line">    </div><div class="line">    if message.name == &quot;shareAction&quot; &#123;</div><div class="line">        let list = message.body as! [Any]</div><div class="line">        </div><div class="line">        let dict = list[0] as! [String: String]</div><div class="line">        print(dict[&quot;title&quot;]!)</div><div class="line">        print(dict[&quot;content&quot;]!)</div><div class="line">        print(dict[&quot;url&quot;]!)</div><div class="line">        </div><div class="line">        let shareSucc = list[1] as! String//获取回调JS，通知H5分享成功了</div><div class="line">        let script = &quot;\(shareSucc)(true)&quot;</div><div class="line">        wkWebView?.evaluateJavaScript(script, completionHandler: nil)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>获取shareSucc的函数回调名称，在合适的时候我们可以通过这个JS函数回调，告诉H5我们的分享结果。</p>
+<p>JS实现如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;js Bridge demo&lt;/title&gt;</div><div class="line">    &lt;meta charset=&quot;utf-8&quot;&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    function shareSucc(isShare) &#123;</div><div class="line">        alert(isShare)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function btnClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            window.webkit.messageHandlers.shareAction.postMessage([&#123; &quot;title&quot;: &quot;分享&quot;, &quot;content&quot;: &quot;内容&quot;, &quot;url&quot;: &quot;链接&quot; &#125;, &quot;shareSucc&quot;])</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">    &lt;h1&gt;js demo test&lt;/h1&gt;</div><div class="line">    &lt;p style=&quot;text-align: center;&quot;&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;btnClick()&quot; style=&quot;font-size: 100px;&quot;&gt;test JS&lt;/button&gt;</div><div class="line">    &lt;/p&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>之前postMessage是发送的字典，由于我们的需求增多了，所以还是改成数组。<br>最后发送shareSucc的字符串，告诉Native我们有一个shareSucc的函数可以接收分享的结果。</p>
+<h3 id="JS和Native统一封装"><a href="#JS和Native统一封装" class="headerlink" title="JS和Native统一封装"></a>JS和Native统一封装</h3><p>上面讲了JS回调Native，Native回调JS，实现了我们常用的一些业务逻辑。<br>里面有很多重复的代码，实现起来也不友好，下面我们把这些重用的全部封装一下，改成好用的接口给上层，使Native和JS的开发人员都不用操心太多的实现细节。</p>
+<h4 id="H5界面的代码"><a href="#H5界面的代码" class="headerlink" title="H5界面的代码"></a>H5界面的代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line"></div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;js Bridge demo&lt;/title&gt;</div><div class="line">    &lt;meta charset=&quot;utf-8&quot;&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    function shareSucc(isShare) &#123;</div><div class="line">        alert(isShare)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function reqUserInfoClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            alert(iOSApp.getUserInfo())</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    function reqShareClick() &#123;</div><div class="line">        try &#123;</div><div class="line">            iOSApp.shareAction(&quot;分享title&quot;, &quot;分享content&quot;, &quot;分享url&quot;, &quot;shareSucc&quot;)</div><div class="line">        &#125; catch (err) &#123;</div><div class="line">            alert(err)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/head&gt;</div><div class="line"></div><div class="line">&lt;body&gt;</div><div class="line">    &lt;h1&gt;js demo test&lt;/h1&gt;</div><div class="line">    &lt;p style=&quot;text-align: center;&quot;&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;reqUserInfoClick()&quot; style=&quot;font-size: 100px;&quot;&gt;获取用户信息&lt;/button&gt;</div><div class="line">        &lt;button type=&quot;button&quot; onclick=&quot;reqShareClick()&quot; style=&quot;font-size: 100px;&quot;&gt;执行分享&lt;/button&gt;</div><div class="line">    &lt;/p&gt;</div><div class="line">&lt;/body&gt;</div><div class="line"></div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h4 id="构造基础类JWebViewController"><a href="#构造基础类JWebViewController" class="headerlink" title="构造基础类JWebViewController"></a>构造基础类JWebViewController</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">//  JWebViewController.swift</div><div class="line">//  JSBridgeTest</div><div class="line">//</div><div class="line">//  Created by jackyshan on 2018/9/26.</div><div class="line">//  Copyright © 2018年 GCI. All rights reserved.</div><div class="line">//</div><div class="line"></div><div class="line">import UIKit</div><div class="line">import WebKit</div><div class="line"></div><div class="line">class JWebViewController: UIViewController, WKUIDelegate, WKScriptMessageHandler &#123;</div><div class="line"></div><div class="line">    private var mAsyncScriptArray:[JKWkWebViewHandler] = []</div><div class="line">    private var mSyncScriptArray:[JKWkWebViewHandler] = []</div><div class="line">    </div><div class="line">    private var wkWebView: WKWebView?</div><div class="line"></div><div class="line">    override func viewDidLoad() &#123;</div><div class="line">        super.viewDidLoad()</div><div class="line"></div><div class="line">        // Do any additional setup after loading the view.</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    public func startUrl(_ url: URL) &#123;</div><div class="line">        let configuretion = WKWebViewConfiguration()</div><div class="line">        configuretion.preferences = WKPreferences()</div><div class="line">        configuretion.preferences.javaScriptEnabled = true</div><div class="line">        configuretion.userContentController = WKUserContentController()</div><div class="line">        if self.mAsyncScriptArray.count != 0 || self.mSyncScriptArray.count != 0 &#123;</div><div class="line">            // 在载入时就添加JS // 只添加到mainFrame中</div><div class="line">            let script = WKUserScript(source: createScript(), injectionTime: .atDocumentStart, forMainFrameOnly: true)</div><div class="line">            configuretion.userContentController.addUserScript(script)</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //异步需要回调，所以需要添加handler</div><div class="line">        for item in self.mAsyncScriptArray &#123;</div><div class="line">            configuretion.userContentController.add(self, name: item.name)</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        let wkWebView = WKWebView(frame: self.view.bounds, configuration: configuretion)</div><div class="line">        wkWebView.uiDelegate = self</div><div class="line">        self.view.insertSubview(wkWebView, at: 0)</div><div class="line">        let request = URLRequest(url: url)</div><div class="line">        wkWebView.load(request)</div><div class="line">        self.wkWebView = wkWebView</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    override func viewDidDisappear(_ animated: Bool) &#123;</div><div class="line">        super.viewDidDisappear(animated)</div><div class="line">        </div><div class="line">        //释放handler</div><div class="line">        for item in self.mAsyncScriptArray &#123;</div><div class="line">            wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: item.name)</div><div class="line">            wkWebView?.configuration.userContentController.removeAllUserScripts()</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // MARK: - 添加JS</div><div class="line">    public func addAsyncJSFunc(functionName: String, parmers: [String], action: @escaping ([String:AnyObject]) -&gt; Void) &#123;</div><div class="line">        var obj = self.mAsyncScriptArray.filter &#123; (obj) -&gt; Bool in</div><div class="line">            return obj.name == functionName</div><div class="line">        &#125;.first</div><div class="line">        </div><div class="line">        if obj == nil &#123;</div><div class="line">            obj = JKWkWebViewHandler()</div><div class="line">            obj!.name = functionName</div><div class="line">            obj!.parmers = parmers</div><div class="line">            obj!.action = action</div><div class="line">            self.mAsyncScriptArray.append(obj!)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public func addSyncJSFunc(functionName: String, parmers: [String]) &#123;</div><div class="line">        var obj = self.mSyncScriptArray.filter &#123; (obj) -&gt; Bool in</div><div class="line">            return obj.name == functionName</div><div class="line">            &#125;.first</div><div class="line">        </div><div class="line">        if obj == nil &#123;</div><div class="line">            obj = JKWkWebViewHandler()</div><div class="line">            obj!.name = functionName</div><div class="line">            obj!.parmers = parmers</div><div class="line">            self.mSyncScriptArray.append(obj!)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    // MARK: - 插入JS</div><div class="line">    private func createScript() -&gt; String &#123;</div><div class="line">        var result = &quot;iOSApp = &#123;&quot;</div><div class="line">        for item in self.mAsyncScriptArray &#123;</div><div class="line">            let pars = createParmes(dict: item.parmers)</div><div class="line">            let str = &quot;\&quot;\(item.name!)\&quot;:function(\(pars))&#123;window.webkit.messageHandlers.\(item.name!).postMessage([\(pars)]);&#125;,&quot;</div><div class="line">            result += str</div><div class="line">        &#125;</div><div class="line">        for item in self.mSyncScriptArray &#123;</div><div class="line">            let pars = createParmes(dict: item.parmers)</div><div class="line">            let str = &quot;\&quot;\(item.name!)\&quot;:function()&#123;return JSON.stringify(\(pars));&#125;,&quot;</div><div class="line">            result += str</div><div class="line">        &#125;</div><div class="line">        result = (result as NSString).substring(to: result.count - 1)</div><div class="line">        result += &quot;&#125;&quot;</div><div class="line">        print(&quot;++++++++\(result)&quot;)</div><div class="line">        return result</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    private func createParmes(dict: [String]) -&gt; String &#123;</div><div class="line">        var result = &quot;&quot;</div><div class="line">        for key in dict &#123;</div><div class="line">            result += key + &quot;,&quot;</div><div class="line">        &#125;</div><div class="line">        if result.count &gt; 0 &#123;</div><div class="line">            result = (result as NSString).substring(to: result.count - 1)</div><div class="line">        &#125;</div><div class="line">        return result</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // MARK: - 执行JS</div><div class="line">    public func actionJsFunc(functionName: String, pars: [AnyObject], completionHandler: ((Any?, Error?) -&gt; Void)?) &#123;</div><div class="line">        var parString = &quot;&quot;</div><div class="line">        for par in pars &#123;</div><div class="line">            parString += &quot;\(par),&quot;</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        if parString.count &gt; 0 &#123;</div><div class="line">            parString = (parString as NSString).substring(to: parString.count - 1)</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        let function = &quot;\(functionName)(\(parString));&quot;</div><div class="line">        wkWebView?.evaluateJavaScript(function, completionHandler: completionHandler)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // MARK: - WKUIDelegate</div><div class="line">    public func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -&gt; Void) &#123;</div><div class="line">        let alert = UIAlertController(title: &quot;提示&quot;, message: message, preferredStyle: .alert)</div><div class="line">        alert.addAction(UIAlertAction(title: &quot;确定&quot;, style: .default, handler: &#123; (_) -&gt; Void in</div><div class="line">            // We must call back js</div><div class="line">            completionHandler()</div><div class="line">        &#125;))</div><div class="line">        </div><div class="line">        self.present(alert, animated: true, completion: nil)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // MARK: - WKScriptMessageHandler</div><div class="line">    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) &#123;</div><div class="line">        </div><div class="line">        let funcObjs = self.mAsyncScriptArray.filter &#123; (obj) -&gt; Bool in</div><div class="line">            return obj.name == message.name</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        if let funcObj = funcObjs.first &#123;</div><div class="line">            let pars = message.body as! [AnyObject]</div><div class="line">            var dict: [String: AnyObject] = [:]</div><div class="line">            for i in 0..&lt;funcObj.parmers.count &#123;</div><div class="line">                let key = funcObj.parmers[i]</div><div class="line">                if pars.count &gt; i &#123;</div><div class="line">                    dict[key] = pars[i]</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">            funcObj.action?(dict)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">class JKWkWebViewHandler: NSObject &#123;</div><div class="line">    fileprivate var name:String!</div><div class="line">    fileprivate var parmers:[String]!</div><div class="line">    fileprivate var action:(([String:AnyObject]) -&gt; Void)?</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="继承JWebViewController，实现业务"><a href="#继承JWebViewController，实现业务" class="headerlink" title="继承JWebViewController，实现业务"></a>继承JWebViewController，实现业务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">//  ViewController.swift</div><div class="line">//  JSBridgeTest</div><div class="line">//</div><div class="line">//  Created by jackyshan on 2018/9/26.</div><div class="line">//  Copyright © 2018年 GCI. All rights reserved.</div><div class="line">//</div><div class="line"></div><div class="line">import UIKit</div><div class="line"></div><div class="line">class ViewController: JWebViewController &#123;</div><div class="line">    </div><div class="line">    override func viewDidLoad() &#123;</div><div class="line">        super.viewDidLoad()</div><div class="line">        // Do any additional setup after loading the view, typically from a nib.</div><div class="line">        </div><div class="line">        let userInfo = [&quot;name&quot;: &quot;wb&quot;, &quot;sex&quot;: &quot;male&quot;, &quot;phone&quot;: &quot;12333434&quot;]</div><div class="line">        let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted)</div><div class="line">        let jsonText = String.init(data: jsonData!, encoding: String.Encoding.utf8)</div><div class="line">        </div><div class="line">        //添加getUserInfo脚本，返回用户信息</div><div class="line">        addSyncJSFunc(functionName: &quot;getUserInfo&quot;, parmers: [jsonText!])</div><div class="line">        </div><div class="line">        //添加shareAction脚本，获得分享参数</div><div class="line">        addAsyncJSFunc(functionName: &quot;shareAction&quot;, parmers: [&quot;name&quot;, &quot;sex&quot;, &quot;phone&quot;, &quot;shareBack&quot;]) &#123; [weak self] (dict) in</div><div class="line">            print(dict[&quot;name&quot;]!)</div><div class="line">            print(dict[&quot;sex&quot;]!)</div><div class="line">            print(dict[&quot;phone&quot;]!)</div><div class="line">            </div><div class="line">            //执行shareBack脚本，告诉H5分享结果</div><div class="line">            self?.actionJsFunc(functionName: dict[&quot;shareBack&quot;] as! String, pars: [true as AnyObject], completionHandler: nil)</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        //开始加载H5</div><div class="line">        startUrl(URL.init(string: &quot;http://192.168.2.1/js.html&quot;)!)</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="讲解JWebViewController"><a href="#讲解JWebViewController" class="headerlink" title="讲解JWebViewController"></a>讲解JWebViewController</h4><p>构造JKWkWebViewHandler类，存储信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">class JKWkWebViewHandler: NSObject &#123;</div><div class="line">    fileprivate var name:String!</div><div class="line">    fileprivate var parmers:[String]!</div><div class="line">    fileprivate var action:(([String:AnyObject]) -&gt; Void)?</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>添加JS，使用JKWkWebViewHandler存储</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public func addAsyncJSFunc(functionName: String, parmers: [String], action: @escaping ([String:AnyObject]) -&gt; Void) &#123;</div><div class="line">    var obj = self.mAsyncScriptArray.filter &#123; (obj) -&gt; Bool in</div><div class="line">        return obj.name == functionName</div><div class="line">    &#125;.first</div><div class="line">    </div><div class="line">    if obj == nil &#123;</div><div class="line">        obj = JKWkWebViewHandler()</div><div class="line">        obj!.name = functionName</div><div class="line">        obj!.parmers = parmers</div><div class="line">        obj!.action = action</div><div class="line">        self.mAsyncScriptArray.append(obj!)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public func addSyncJSFunc(functionName: String, parmers: [String]) &#123;</div><div class="line">    var obj = self.mSyncScriptArray.filter &#123; (obj) -&gt; Bool in</div><div class="line">        return obj.name == functionName</div><div class="line">        &#125;.first</div><div class="line">    </div><div class="line">    if obj == nil &#123;</div><div class="line">        obj = JKWkWebViewHandler()</div><div class="line">        obj!.name = functionName</div><div class="line">        obj!.parmers = parmers</div><div class="line">        self.mSyncScriptArray.append(obj!)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建JS脚本，使用iOSApp对象封装，异步回调传回Native的函数window.webkit.messageHandlers.xxx直接封装在JS函数中。<br>这样有一个好处，H5调用JS，直接iOSApp.xxx(xxx)就行了，不需要写window.webkit.messageHandlers.xxx这些代码。<br>这对于H5来说，跟平时写的JS脚本没有什么区别，方便了调用。<br>对于Native来说，帮H5做了JS的回调的封装，并通过handler回调得到自己想要的参数，通过这个封装，两端的工作都只需要关注<br>业务层就行了，继承JWebViewController，可以专心写业务逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">private func createScript() -&gt; String &#123;</div><div class="line">        var result = &quot;iOSApp = &#123;&quot;</div><div class="line">        for item in self.mAsyncScriptArray &#123;</div><div class="line">            let pars = createParmes(dict: item.parmers)</div><div class="line">            let str = &quot;\&quot;\(item.name!)\&quot;:function(\(pars))&#123;window.webkit.messageHandlers.\(item.name!).postMessage([\(pars)]);&#125;,&quot;</div><div class="line">            result += str</div><div class="line">        &#125;</div><div class="line">        for item in self.mSyncScriptArray &#123;</div><div class="line">            let pars = createParmes(dict: item.parmers)</div><div class="line">            let str = &quot;\&quot;\(item.name!)\&quot;:function()&#123;return JSON.stringify(\(pars));&#125;,&quot;</div><div class="line">            result += str</div><div class="line">        &#125;</div><div class="line">        result = (result as NSString).substring(to: result.count - 1)</div><div class="line">        result += &quot;&#125;&quot;</div><div class="line">        print(&quot;++++++++\(result)&quot;)</div><div class="line">        return result</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>构造JS，实现传参给H5页面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public func actionJsFunc(functionName: String, pars: [AnyObject], completionHandler: ((Any?, Error?) -&gt; Void)?) &#123;</div><div class="line">    var parString = &quot;&quot;</div><div class="line">    for par in pars &#123;</div><div class="line">        parString += &quot;\(par),&quot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    if parString.count &gt; 0 &#123;</div><div class="line">        parString = (parString as NSString).substring(to: parString.count - 1)</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    let function = &quot;\(functionName)(\(parString));&quot;</div><div class="line">    wkWebView?.evaluateJavaScript(function, completionHandler: completionHandler)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注入JS脚本到WKWebViewConfiguration中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">let configuretion = WKWebViewConfiguration()</div><div class="line">configuretion.preferences = WKPreferences()</div><div class="line">configuretion.preferences.javaScriptEnabled = true</div><div class="line">configuretion.userContentController = WKUserContentController()</div><div class="line">if self.mAsyncScriptArray.count != 0 || self.mSyncScriptArray.count != 0 &#123;</div><div class="line">    // 在载入时就添加JS // 只添加到mainFrame中</div><div class="line">    let script = WKUserScript(source: createScript(), injectionTime: .atDocumentStart, forMainFrameOnly: true)</div><div class="line">    configuretion.userContentController.addUserScript(script)</div><div class="line">&#125;</div><div class="line"></div><div class="line">//异步需要回调，所以需要添加handler</div><div class="line">for item in self.mAsyncScriptArray &#123;</div><div class="line">    configuretion.userContentController.add(self, name: item.name)</div><div class="line">&#125;</div><div class="line"></div><div class="line">let wkWebView = WKWebView(frame: self.view.bounds, configuration: configuretion)</div></pre></td></tr></table></figure>
+<p>合适的时候释放JS的handler，注意不释放的话，Controller不会调用deinit，发生内存泄露。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">override func viewDidDisappear(_ animated: Bool) &#123;</div><div class="line">    super.viewDidDisappear(animated)</div><div class="line">    </div><div class="line">    //释放handler</div><div class="line">    for item in self.mAsyncScriptArray &#123;</div><div class="line">        wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: item.name)</div><div class="line">        wkWebView?.configuration.userContentController.removeAllUserScripts()</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码示例放到<a href="https://github.com/jackyshan/JSBridgeTest" target="_blank" rel="external">Github</a>了，有需要的可以下载查看。</p>
+<h3 id="关注我"><a href="#关注我" class="headerlink" title="关注我"></a>关注我</h3><p>欢迎关注公众号：jackyshan，技术干货首发微信，第一时间推送。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/301129-bdd8c22856a81ede?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/26/iOS设计模式详解/" rel="next" title="iOS设计模式详解">
+                <i class="fa fa-chevron-left"></i> iOS设计模式详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/19/iOS计算机视觉—人脸识别/" rel="prev" title="iOS计算机视觉—人脸识别">
+                iOS计算机视觉—人脸识别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="jacky" />
+          <p class="site-author-name" itemprop="name">jacky</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/a2133b6aa395" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  简书
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://juejin.im/user/5a7c14cb6fb9a0635d0c0c4f/posts" target="_blank" title="掘金">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  掘金
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jackyshan" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JS和Native交互常用的场景"><span class="nav-number">2.</span> <span class="nav-text">JS和Native交互常用的场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#H5获取Native用户信息"><span class="nav-number">2.1.</span> <span class="nav-text">H5获取Native用户信息</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#注入JS变量"><span class="nav-number">2.1.1.</span> <span class="nav-text">注入JS变量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注入JS对象"><span class="nav-number">2.1.2.</span> <span class="nav-text">注入JS对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注入JS函数"><span class="nav-number">2.1.3.</span> <span class="nav-text">注入JS函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#evaluateJavaScript实现注入"><span class="nav-number">2.1.4.</span> <span class="nav-text">evaluateJavaScript实现注入</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#H5传递信息给Native，调用Native分享"><span class="nav-number">2.2.</span> <span class="nav-text">H5传递信息给Native，调用Native分享</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Native告诉H5分享结果"><span class="nav-number">2.3.</span> <span class="nav-text">Native告诉H5分享结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JS和Native统一封装"><span class="nav-number">3.</span> <span class="nav-text">JS和Native统一封装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#H5界面的代码"><span class="nav-number">3.1.</span> <span class="nav-text">H5界面的代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构造基础类JWebViewController"><span class="nav-number">3.2.</span> <span class="nav-text">构造基础类JWebViewController</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继承JWebViewController，实现业务"><span class="nav-number">3.3.</span> <span class="nav-text">继承JWebViewController，实现业务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#讲解JWebViewController"><span class="nav-number">3.4.</span> <span class="nav-text">讲解JWebViewController</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关注我"><span class="nav-number">4.</span> <span class="nav-text">关注我</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jacky</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://jackyshan.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://jackyshan.github.io/2018/10/19/iOS中WKWebView和Native交互/';
+          this.page.identifier = '2018/10/19/iOS中WKWebView和Native交互/';
+          this.page.title = 'iOS中WKWebView和Native交互';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://jackyshan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
